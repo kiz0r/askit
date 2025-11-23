@@ -1,0 +1,37 @@
+{
+  "name": "askit",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "check": "pnpm /check:/",
+    "check:declutter": "pnpm declutter",
+    "check:fmt": "pnpm fmt",
+    "check:validate": "pnpm validate",
+    "declutter": "knip",
+    "declutter:write": "knip --fix",
+    "dev": "vite dev",
+    "fmt": "biome check . --error-on-warnings",
+    "fmt:write": "biome check . --write --error-on-warnings",
+    "prepare": "husky",
+    "test": "vitest run --passWithNoTests",
+    "validate": "tsc --project 'tsconfig.json' --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-router-devtools": "^1.154.8",
+    "@tanstack/react-router": "^1.154.8",
+    "@tanstack/router-plugin": "^1.154.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.11",
+    "@tanstack/devtools-vite": "^0.4.1",
+    "@types/node": "^25.0.10",
+    "@vitejs/plugin-react": "^5.1.2",
+    "husky": "^9.1.7",
+    "knip": "^5.82.1",
+    "sass-embedded": "^1.97.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.17"
+  }
+}

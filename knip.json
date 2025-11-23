@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/knip/schema.json",
+  "entry": ["src/main.tsx"],
+  "project": ["src/**/*.ts", "src/**/*.tsx"],
+  "rules": {
+    "binaries": "error",
+    "classMembers": "warn",
+    "dependencies": "error",
+    "devDependencies": "error",
+    "optionalPeerDependencies": "warn",
+    "duplicates": "off",
+    "enumMembers": "off",
+    "exports": "off",
+    "files": "off",
+    "nsExports": "off",
+    "nsTypes": "off",
+    "types": "off",
+    "unlisted": "off",
+    "unresolved": "off"
+  },
+  "biome": {
+    "config": ["biome.json"]
+  },
+  "ignore": ["src/routeTree.gen.ts"],
+  "vite": {
+    "config": ["vite.config.{js,mjs,ts,cjs,mts,cts}"]
+  },
+  "ignoreDependencies": [],
+  "ignoreFiles": []
+}

@@ -1,0 +1,3 @@
+pnpm fmt --staged --no-errors-on-unmatched
+pnpm validate
+pnpm declutter
