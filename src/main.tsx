@@ -1,6 +1,7 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import ReactDOM from 'react-dom/client';
 import { routeTree } from './routeTree.gen';
+import '@radix-ui/themes/styles.css';
 import './main.scss';
 
 // Create a new router instance
