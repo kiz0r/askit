@@ -13,17 +13,20 @@
     "dev": "vite dev",
     "fmt": "biome check . --error-on-warnings",
     "fmt:write": "biome check . --write --error-on-warnings",
-    "prepare": "husky",
+    "prepare": "pnpm /prepare:/",
+    "prepare:husky": "husky",
+    "prepare:effect": "effect-language-service patch",
     "test": "vitest run --passWithNoTests",
     "validate": "tsc --project 'tsconfig.json' --noEmit"
   },
   "dependencies": {
-    "@tanstack/react-router-devtools": "^1.154.8",
-    "@tanstack/react-router": "^1.154.8",
-    "@tanstack/router-plugin": "^1.154.8"
+    "@tanstack/react-router-devtools": "^1.157.16",
+    "@tanstack/react-router": "^1.157.16",
+    "@tanstack/router-plugin": "^1.157.16"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.11",
+    "@biomejs/biome": "2.3.13",
+    "@effect/language-service": "^0.72.0",
     "@tanstack/devtools-vite": "^0.4.1",
     "@types/node": "^25.0.10",
     "@vitejs/plugin-react": "^5.1.2",
@@ -32,6 +35,6 @@
     "sass-embedded": "^1.97.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   }
 }
