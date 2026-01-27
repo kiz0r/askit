@@ -1,0 +1,19 @@
+.Toaster {}
+
+// We have to use !important here to override sonner's default styles.
+// See: https://arc.net/l/quote/eeclzqbn
+.Toaster__Toast {}
+
+.Toaster__ToastInfo {}
+
+.Toaster__ToastSuccess {}
+
+.Toaster__ToastError {}
+
+.Toaster__ToastWarning {}
+
+.Toaster__ToastIcon {}
+
+.Toaster__ToastTitle {}
+
+.Toaster__ToastDescription {}
