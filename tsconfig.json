@@ -28,7 +28,13 @@
     "strict": true,
     "target": "ES2022",
     "useDefineForClassFields": false,
-    "incremental": true
+    "plugins": [
+      {
+        "name": "@effect/language-service",
+        "namespaceImportPackages": ["effect"],
+        "topLevelNamedReexports": "follow"
+      }
+    ]
   }
 }
 
