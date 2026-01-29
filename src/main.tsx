@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { routeTree } from './routeTree.gen';
 import '@radix-ui/themes/styles.css';
 import './main.scss';
+import { NotFound } from './not-found/NotFound';
 
 // Create a new router instance
 const router = createRouter({
@@ -12,6 +13,7 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  defaultNotFoundComponent: NotFound,
 });
 
 // Register the router instance for type safety
