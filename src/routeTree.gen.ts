@@ -9,27 +9,200 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthAuthLayoutRouteImport } from './routes/auth/_authLayout'
+import { Route as withAuthWithAuthLayoutRouteImport } from './routes/(with-auth)/_withAuthLayout'
+import { Route as AuthAuthLayoutRegisterRouteImport } from './routes/auth/_authLayout.register'
+import { Route as AuthAuthLayoutLoginRouteImport } from './routes/auth/_authLayout.login'
+import { Route as withAuthWithAuthLayoutDashboardRouteImport } from './routes/(with-auth)/_withAuthLayout.dashboard'
+import { Route as withAuthWithAuthLayoutQuizNewRouteImport } from './routes/(with-auth)/_withAuthLayout.quiz.new'
 
-export interface FileRoutesByFullPath {}
-export interface FileRoutesByTo {}
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthAuthLayoutRoute = AuthAuthLayoutRouteImport.update({
+  id: '/auth/_authLayout',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const withAuthWithAuthLayoutRoute = withAuthWithAuthLayoutRouteImport.update({
+  id: '/(with-auth)/_withAuthLayout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthAuthLayoutRegisterRoute = AuthAuthLayoutRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthAuthLayoutRoute,
+} as any)
+const AuthAuthLayoutLoginRoute = AuthAuthLayoutLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthAuthLayoutRoute,
+} as any)
+const withAuthWithAuthLayoutDashboardRoute =
+  withAuthWithAuthLayoutDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => withAuthWithAuthLayoutRoute,
+  } as any)
+const withAuthWithAuthLayoutQuizNewRoute =
+  withAuthWithAuthLayoutQuizNewRouteImport.update({
+    id: '/quiz/new',
+    path: '/quiz/new',
+    getParentRoute: () => withAuthWithAuthLayoutRoute,
+  } as any)
+
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/auth': typeof AuthAuthLayoutRouteWithChildren
+  '/dashboard': typeof withAuthWithAuthLayoutDashboardRoute
+  '/auth/login': typeof AuthAuthLayoutLoginRoute
+  '/auth/register': typeof AuthAuthLayoutRegisterRoute
+  '/quiz/new': typeof withAuthWithAuthLayoutQuizNewRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/auth': typeof AuthAuthLayoutRouteWithChildren
+  '/dashboard': typeof withAuthWithAuthLayoutDashboardRoute
+  '/auth/login': typeof AuthAuthLayoutLoginRoute
+  '/auth/register': typeof AuthAuthLayoutRegisterRoute
+  '/quiz/new': typeof withAuthWithAuthLayoutQuizNewRoute
+}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/(with-auth)/_withAuthLayout': typeof withAuthWithAuthLayoutRouteWithChildren
+  '/auth/_authLayout': typeof AuthAuthLayoutRouteWithChildren
+  '/(with-auth)/_withAuthLayout/dashboard': typeof withAuthWithAuthLayoutDashboardRoute
+  '/auth/_authLayout/login': typeof AuthAuthLayoutLoginRoute
+  '/auth/_authLayout/register': typeof AuthAuthLayoutRegisterRoute
+  '/(with-auth)/_withAuthLayout/quiz/new': typeof withAuthWithAuthLayoutQuizNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: never
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/auth/login'
+    | '/auth/register'
+    | '/quiz/new'
   fileRoutesByTo: FileRoutesByTo
-  to: never
-  id: '__root__'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/auth/login'
+    | '/auth/register'
+    | '/quiz/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/(with-auth)/_withAuthLayout'
+    | '/auth/_authLayout'
+    | '/(with-auth)/_withAuthLayout/dashboard'
+    | '/auth/_authLayout/login'
+    | '/auth/_authLayout/register'
+    | '/(with-auth)/_withAuthLayout/quiz/new'
   fileRoutesById: FileRoutesById
 }
-export interface RootRouteChildren {}
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  withAuthWithAuthLayoutRoute: typeof withAuthWithAuthLayoutRouteWithChildren
+  AuthAuthLayoutRoute: typeof AuthAuthLayoutRouteWithChildren
 }
 
-const rootRouteChildren: RootRouteChildren = {}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/_authLayout': {
+      id: '/auth/_authLayout'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthAuthLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(with-auth)/_withAuthLayout': {
+      id: '/(with-auth)/_withAuthLayout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof withAuthWithAuthLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/_authLayout/register': {
+      id: '/auth/_authLayout/register'
+      path: '/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthAuthLayoutRegisterRouteImport
+      parentRoute: typeof AuthAuthLayoutRoute
+    }
+    '/auth/_authLayout/login': {
+      id: '/auth/_authLayout/login'
+      path: '/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthAuthLayoutLoginRouteImport
+      parentRoute: typeof AuthAuthLayoutRoute
+    }
+    '/(with-auth)/_withAuthLayout/dashboard': {
+      id: '/(with-auth)/_withAuthLayout/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof withAuthWithAuthLayoutDashboardRouteImport
+      parentRoute: typeof withAuthWithAuthLayoutRoute
+    }
+    '/(with-auth)/_withAuthLayout/quiz/new': {
+      id: '/(with-auth)/_withAuthLayout/quiz/new'
+      path: '/quiz/new'
+      fullPath: '/quiz/new'
+      preLoaderRoute: typeof withAuthWithAuthLayoutQuizNewRouteImport
+      parentRoute: typeof withAuthWithAuthLayoutRoute
+    }
+  }
+}
+
+interface withAuthWithAuthLayoutRouteChildren {
+  withAuthWithAuthLayoutDashboardRoute: typeof withAuthWithAuthLayoutDashboardRoute
+  withAuthWithAuthLayoutQuizNewRoute: typeof withAuthWithAuthLayoutQuizNewRoute
+}
+
+const withAuthWithAuthLayoutRouteChildren: withAuthWithAuthLayoutRouteChildren =
+  {
+    withAuthWithAuthLayoutDashboardRoute: withAuthWithAuthLayoutDashboardRoute,
+    withAuthWithAuthLayoutQuizNewRoute: withAuthWithAuthLayoutQuizNewRoute,
+  }
+
+const withAuthWithAuthLayoutRouteWithChildren =
+  withAuthWithAuthLayoutRoute._addFileChildren(
+    withAuthWithAuthLayoutRouteChildren,
+  )
+
+interface AuthAuthLayoutRouteChildren {
+  AuthAuthLayoutLoginRoute: typeof AuthAuthLayoutLoginRoute
+  AuthAuthLayoutRegisterRoute: typeof AuthAuthLayoutRegisterRoute
+}
+
+const AuthAuthLayoutRouteChildren: AuthAuthLayoutRouteChildren = {
+  AuthAuthLayoutLoginRoute: AuthAuthLayoutLoginRoute,
+  AuthAuthLayoutRegisterRoute: AuthAuthLayoutRegisterRoute,
+}
+
+const AuthAuthLayoutRouteWithChildren = AuthAuthLayoutRoute._addFileChildren(
+  AuthAuthLayoutRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  withAuthWithAuthLayoutRoute: withAuthWithAuthLayoutRouteWithChildren,
+  AuthAuthLayoutRoute: AuthAuthLayoutRouteWithChildren,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()

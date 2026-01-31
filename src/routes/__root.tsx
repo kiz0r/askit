@@ -3,10 +3,11 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Provider as StoreProvider } from 'jotai';
 import { AppearanceProvider } from '../appearance/AppearanceProvider';
 import { ErrorBoundary } from '../error-boundary/ErrorBoundary';
+import { NotificationCenter } from '../notifications/NotificationCenter';
 import { QueryClientProvider } from '../providers/QueryClientProvider';
 import { isDev } from '../settings';
 import { store } from '../store';
-import { Toaster } from '../toaster/Toaster';
+import { UserProvider } from '../user/UserProvider';
 
 export const Route = createRootRoute({
   component: () => (
@@ -14,9 +15,10 @@ export const Route = createRootRoute({
       <AppearanceProvider>
         <ErrorBoundary onError={() => {}}>
           <QueryClientProvider>
+            <UserProvider />
             <Outlet />
           </QueryClientProvider>
-          <Toaster />
+          <NotificationCenter />
         </ErrorBoundary>
         {isDev ? <TanStackRouterDevtools position='bottom-right' /> : null}
       </AppearanceProvider>

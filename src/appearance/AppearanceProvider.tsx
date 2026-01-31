@@ -14,7 +14,7 @@ export const AppearanceProvider = React.memo((props: Props) => {
     <Theme
       appearance={appearance.style}
       className={styles.AppearanceProvider}
-      accentColor='iris'
+      accentColor='blue'
       grayColor='auto'
       radius='medium'
       panelBackground='translucent'
