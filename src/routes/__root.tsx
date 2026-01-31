@@ -7,7 +7,7 @@ import { NotificationCenter } from '../notifications/NotificationCenter';
 import { QueryClientProvider } from '../providers/QueryClientProvider';
 import { isDev } from '../settings';
 import { store } from '../store';
-import { Toaster } from '../toaster/Toaster';
+import { UserProvider } from '../user/UserProvider';
 
 export const Route = createRootRoute({
   component: () => (
@@ -15,6 +15,7 @@ export const Route = createRootRoute({
       <AppearanceProvider>
         <ErrorBoundary onError={() => {}}>
           <QueryClientProvider>
+            <UserProvider />
             <Outlet />
           </QueryClientProvider>
           <NotificationCenter />
