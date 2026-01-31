@@ -1,0 +1,30 @@
+.AuthCard {
+  justify-self: center;
+  max-width: 30rem;
+  width: 100%;
+  padding: 0; // Reset default padding, handle it in inner sections
+}
+
+@mixin inner-section {
+  padding: var(--space-3);
+
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.AuthCard__Header {
+  @include inner-section;
+}
+
+.AuthCard__Body {
+  @include inner-section;
+}
+
+.AuthCard__Footer {
+  @include inner-section;
+
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
