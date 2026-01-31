@@ -13,6 +13,9 @@ export const Route = createFileRoute('/')({
         <li>
           <Link to='/auth/register'>Register</Link>
         </li>
+        <li>
+          <Link to='/dashboard'>Dashboard</Link>
+        </li>
       </ul>
     </div>
   ),
