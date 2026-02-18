@@ -1,22 +1,10 @@
 # Ask IT!
 
-### Project setup
-1. Clone the repository
-```bash
-git clone <repository_url>
-```
+## Documentation
+Project Setup → [Guide](./docs/PROJECT_SETUP.md)
+Project Scripts → [Guide](./docs/PROJECT_SCRIPTS.md)
 
-2. Navigate to the project directory
-```bash
-cd askit-frontend
-```
+## Author
 
-3. Install dependencies
-```bash
-pnpm install
-```
-
-4. Start the development server
-```bash
-pnpm dev
-```
+Kyrylo Khomenko  
+[GitHub](https://github.com/kiz0r) • [LinkedIn](https://www.linkedin.com/in/khomenkokyrylo/)
