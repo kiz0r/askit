@@ -11,11 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthAuthLayoutRouteImport } from './routes/auth/_authLayout'
-import { Route as withAuthWithAuthLayoutRouteImport } from './routes/(with-auth)/_withAuthLayout'
+import { Route as dashboardDashboardLayoutRouteImport } from './routes/(dashboard)/_dashboardLayout'
 import { Route as AuthAuthLayoutRegisterRouteImport } from './routes/auth/_authLayout.register'
 import { Route as AuthAuthLayoutLoginRouteImport } from './routes/auth/_authLayout.login'
-import { Route as withAuthWithAuthLayoutDashboardRouteImport } from './routes/(with-auth)/_withAuthLayout.dashboard'
-import { Route as withAuthWithAuthLayoutQuizNewRouteImport } from './routes/(with-auth)/_withAuthLayout.quiz.new'
+import { Route as dashboardDashboardLayoutQuizzesRouteImport } from './routes/(dashboard)/_dashboardLayout.quizzes'
+import { Route as dashboardDashboardLayoutQuizNewRouteImport } from './routes/(dashboard)/_dashboardLayout.quiz.new'
+import { Route as dashboardDashboardLayoutQuizEditQuizIdRouteImport } from './routes/(dashboard)/_dashboardLayout.quiz.edit.$quizId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -27,10 +28,11 @@ const AuthAuthLayoutRoute = AuthAuthLayoutRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const withAuthWithAuthLayoutRoute = withAuthWithAuthLayoutRouteImport.update({
-  id: '/(with-auth)/_withAuthLayout',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const dashboardDashboardLayoutRoute =
+  dashboardDashboardLayoutRouteImport.update({
+    id: '/(dashboard)/_dashboardLayout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthAuthLayoutRegisterRoute = AuthAuthLayoutRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -41,76 +43,88 @@ const AuthAuthLayoutLoginRoute = AuthAuthLayoutLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthAuthLayoutRoute,
 } as any)
-const withAuthWithAuthLayoutDashboardRoute =
-  withAuthWithAuthLayoutDashboardRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => withAuthWithAuthLayoutRoute,
+const dashboardDashboardLayoutQuizzesRoute =
+  dashboardDashboardLayoutQuizzesRouteImport.update({
+    id: '/quizzes',
+    path: '/quizzes',
+    getParentRoute: () => dashboardDashboardLayoutRoute,
   } as any)
-const withAuthWithAuthLayoutQuizNewRoute =
-  withAuthWithAuthLayoutQuizNewRouteImport.update({
+const dashboardDashboardLayoutQuizNewRoute =
+  dashboardDashboardLayoutQuizNewRouteImport.update({
     id: '/quiz/new',
     path: '/quiz/new',
-    getParentRoute: () => withAuthWithAuthLayoutRoute,
+    getParentRoute: () => dashboardDashboardLayoutRoute,
+  } as any)
+const dashboardDashboardLayoutQuizEditQuizIdRoute =
+  dashboardDashboardLayoutQuizEditQuizIdRouteImport.update({
+    id: '/quiz/edit/$quizId',
+    path: '/quiz/edit/$quizId',
+    getParentRoute: () => dashboardDashboardLayoutRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthAuthLayoutRouteWithChildren
-  '/dashboard': typeof withAuthWithAuthLayoutDashboardRoute
+  '/quizzes': typeof dashboardDashboardLayoutQuizzesRoute
   '/auth/login': typeof AuthAuthLayoutLoginRoute
   '/auth/register': typeof AuthAuthLayoutRegisterRoute
-  '/quiz/new': typeof withAuthWithAuthLayoutQuizNewRoute
+  '/quiz/new': typeof dashboardDashboardLayoutQuizNewRoute
+  '/quiz/edit/$quizId': typeof dashboardDashboardLayoutQuizEditQuizIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthAuthLayoutRouteWithChildren
-  '/dashboard': typeof withAuthWithAuthLayoutDashboardRoute
+  '/quizzes': typeof dashboardDashboardLayoutQuizzesRoute
   '/auth/login': typeof AuthAuthLayoutLoginRoute
   '/auth/register': typeof AuthAuthLayoutRegisterRoute
-  '/quiz/new': typeof withAuthWithAuthLayoutQuizNewRoute
+  '/quiz/new': typeof dashboardDashboardLayoutQuizNewRoute
+  '/quiz/edit/$quizId': typeof dashboardDashboardLayoutQuizEditQuizIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/(with-auth)/_withAuthLayout': typeof withAuthWithAuthLayoutRouteWithChildren
+  '/(dashboard)/_dashboardLayout': typeof dashboardDashboardLayoutRouteWithChildren
   '/auth/_authLayout': typeof AuthAuthLayoutRouteWithChildren
-  '/(with-auth)/_withAuthLayout/dashboard': typeof withAuthWithAuthLayoutDashboardRoute
+  '/(dashboard)/_dashboardLayout/quizzes': typeof dashboardDashboardLayoutQuizzesRoute
   '/auth/_authLayout/login': typeof AuthAuthLayoutLoginRoute
   '/auth/_authLayout/register': typeof AuthAuthLayoutRegisterRoute
-  '/(with-auth)/_withAuthLayout/quiz/new': typeof withAuthWithAuthLayoutQuizNewRoute
+  '/(dashboard)/_dashboardLayout/quiz/new': typeof dashboardDashboardLayoutQuizNewRoute
+  '/(dashboard)/_dashboardLayout/quiz/edit/$quizId': typeof dashboardDashboardLayoutQuizEditQuizIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
-    | '/dashboard'
+    | '/quizzes'
     | '/auth/login'
     | '/auth/register'
     | '/quiz/new'
+    | '/quiz/edit/$quizId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/dashboard'
+    | '/quizzes'
     | '/auth/login'
     | '/auth/register'
     | '/quiz/new'
+    | '/quiz/edit/$quizId'
   id:
     | '__root__'
     | '/'
-    | '/(with-auth)/_withAuthLayout'
+    | '/(dashboard)/_dashboardLayout'
     | '/auth/_authLayout'
-    | '/(with-auth)/_withAuthLayout/dashboard'
+    | '/(dashboard)/_dashboardLayout/quizzes'
     | '/auth/_authLayout/login'
     | '/auth/_authLayout/register'
-    | '/(with-auth)/_withAuthLayout/quiz/new'
+    | '/(dashboard)/_dashboardLayout/quiz/new'
+    | '/(dashboard)/_dashboardLayout/quiz/edit/$quizId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  withAuthWithAuthLayoutRoute: typeof withAuthWithAuthLayoutRouteWithChildren
+  dashboardDashboardLayoutRoute: typeof dashboardDashboardLayoutRouteWithChildren
   AuthAuthLayoutRoute: typeof AuthAuthLayoutRouteWithChildren
 }
 
@@ -130,11 +144,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(with-auth)/_withAuthLayout': {
-      id: '/(with-auth)/_withAuthLayout'
+    '/(dashboard)/_dashboardLayout': {
+      id: '/(dashboard)/_dashboardLayout'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof withAuthWithAuthLayoutRouteImport
+      preLoaderRoute: typeof dashboardDashboardLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/_authLayout/register': {
@@ -151,37 +165,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthLayoutLoginRouteImport
       parentRoute: typeof AuthAuthLayoutRoute
     }
-    '/(with-auth)/_withAuthLayout/dashboard': {
-      id: '/(with-auth)/_withAuthLayout/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof withAuthWithAuthLayoutDashboardRouteImport
-      parentRoute: typeof withAuthWithAuthLayoutRoute
+    '/(dashboard)/_dashboardLayout/quizzes': {
+      id: '/(dashboard)/_dashboardLayout/quizzes'
+      path: '/quizzes'
+      fullPath: '/quizzes'
+      preLoaderRoute: typeof dashboardDashboardLayoutQuizzesRouteImport
+      parentRoute: typeof dashboardDashboardLayoutRoute
     }
-    '/(with-auth)/_withAuthLayout/quiz/new': {
-      id: '/(with-auth)/_withAuthLayout/quiz/new'
+    '/(dashboard)/_dashboardLayout/quiz/new': {
+      id: '/(dashboard)/_dashboardLayout/quiz/new'
       path: '/quiz/new'
       fullPath: '/quiz/new'
-      preLoaderRoute: typeof withAuthWithAuthLayoutQuizNewRouteImport
-      parentRoute: typeof withAuthWithAuthLayoutRoute
+      preLoaderRoute: typeof dashboardDashboardLayoutQuizNewRouteImport
+      parentRoute: typeof dashboardDashboardLayoutRoute
+    }
+    '/(dashboard)/_dashboardLayout/quiz/edit/$quizId': {
+      id: '/(dashboard)/_dashboardLayout/quiz/edit/$quizId'
+      path: '/quiz/edit/$quizId'
+      fullPath: '/quiz/edit/$quizId'
+      preLoaderRoute: typeof dashboardDashboardLayoutQuizEditQuizIdRouteImport
+      parentRoute: typeof dashboardDashboardLayoutRoute
     }
   }
 }
 
-interface withAuthWithAuthLayoutRouteChildren {
-  withAuthWithAuthLayoutDashboardRoute: typeof withAuthWithAuthLayoutDashboardRoute
-  withAuthWithAuthLayoutQuizNewRoute: typeof withAuthWithAuthLayoutQuizNewRoute
+interface dashboardDashboardLayoutRouteChildren {
+  dashboardDashboardLayoutQuizzesRoute: typeof dashboardDashboardLayoutQuizzesRoute
+  dashboardDashboardLayoutQuizNewRoute: typeof dashboardDashboardLayoutQuizNewRoute
+  dashboardDashboardLayoutQuizEditQuizIdRoute: typeof dashboardDashboardLayoutQuizEditQuizIdRoute
 }
 
-const withAuthWithAuthLayoutRouteChildren: withAuthWithAuthLayoutRouteChildren =
+const dashboardDashboardLayoutRouteChildren: dashboardDashboardLayoutRouteChildren =
   {
-    withAuthWithAuthLayoutDashboardRoute: withAuthWithAuthLayoutDashboardRoute,
-    withAuthWithAuthLayoutQuizNewRoute: withAuthWithAuthLayoutQuizNewRoute,
+    dashboardDashboardLayoutQuizzesRoute: dashboardDashboardLayoutQuizzesRoute,
+    dashboardDashboardLayoutQuizNewRoute: dashboardDashboardLayoutQuizNewRoute,
+    dashboardDashboardLayoutQuizEditQuizIdRoute:
+      dashboardDashboardLayoutQuizEditQuizIdRoute,
   }
 
-const withAuthWithAuthLayoutRouteWithChildren =
-  withAuthWithAuthLayoutRoute._addFileChildren(
-    withAuthWithAuthLayoutRouteChildren,
+const dashboardDashboardLayoutRouteWithChildren =
+  dashboardDashboardLayoutRoute._addFileChildren(
+    dashboardDashboardLayoutRouteChildren,
   )
 
 interface AuthAuthLayoutRouteChildren {
@@ -200,7 +224,7 @@ const AuthAuthLayoutRouteWithChildren = AuthAuthLayoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  withAuthWithAuthLayoutRoute: withAuthWithAuthLayoutRouteWithChildren,
+  dashboardDashboardLayoutRoute: dashboardDashboardLayoutRouteWithChildren,
   AuthAuthLayoutRoute: AuthAuthLayoutRouteWithChildren,
 }
 export const routeTree = rootRouteImport
