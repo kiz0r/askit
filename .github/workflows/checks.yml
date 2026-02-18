@@ -1,0 +1,44 @@
+name: 💯 Checks
+run-name: ${{ github.event_name == 'pull_request' && format('💯 Checks | {0}', github.event.pull_request.title) || '💯 Checks' }}
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  checks:
+    name: 💯 Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟧 Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: 💻 Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: ☁️ Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 📐 Format & Lint
+        run: pnpm fmt
+      
+      - name: 🧹 Declutter
+        run: pnpm declutter
+
+      - name: 🔍 Validate
+        run: pnpm validate
+
+      - name: 🧪 Test
+        run: pnpm test
+
+      - name: 🏗️ Build
+        run: |
+          pnpm build
