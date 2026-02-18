@@ -15,14 +15,14 @@ export const AppearanceSelect = React.memo(() => {
       onValueChange={(nextValue: Appearance) => appearance.setStyle(nextValue)}
     >
       <Select.Trigger />
-      <Select.Content>
+      <Select.Content className={styles.AppearanceSelect__Content} side='right'>
         <Select.Item value='light' className={styles.AppearanceSelect__Item}>
           <div className={styles.AppearanceSelect__Item}>
             <Strong>Light</Strong>
             <SunIcon />
           </div>
         </Select.Item>
-        <Select.Item value='dark'>
+        <Select.Item value='dark' className={styles.AppearanceSelect__Item}>
           <div className={styles.AppearanceSelect__Item}>
             <Strong>Dark</Strong>
             <MoonIcon />
