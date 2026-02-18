@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { routeTree } from './routeTree.gen';
 import '@radix-ui/themes/styles.css';
 import './main.scss';
-import { NotFound } from './not-found/NotFound';
+import { NotFound } from './app/not-found/NotFound';
 
 // Create a new router instance
 const router = createRouter({

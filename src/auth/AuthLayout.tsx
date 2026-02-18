@@ -27,7 +27,7 @@ export const AuthLayout = React.memo((props: Props) => {
     }
 
     if (isUserLoggedIn) {
-      navigate({ to: '/dashboard' });
+      navigate({ to: '/quizzes' });
     }
   }, [isUserLoggedIn, isLoading, navigate]);
 

@@ -23,7 +23,9 @@ const InputFieldInner = <T extends FieldValues>(props: Props<T>) => {
       name={props.name}
       render={({ field }) => (
         <label htmlFor={id}>
-          <Text>{props.label}</Text>
+          <Text size='2' color='gray'>
+            {props.label}
+          </Text>
           <TextField.Root
             {...field}
             id={id}
