@@ -1,8 +1,8 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Provider as StoreProvider } from 'jotai';
+import { ErrorBoundary } from '../app/error-boundary/ErrorBoundary';
 import { AppearanceProvider } from '../appearance/AppearanceProvider';
-import { ErrorBoundary } from '../error-boundary/ErrorBoundary';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { QueryClientProvider } from '../providers/QueryClientProvider';
 import { isDev } from '../settings';
@@ -13,7 +13,7 @@ export const Route = createRootRoute({
   component: () => (
     <StoreProvider store={store}>
       <AppearanceProvider>
-        <ErrorBoundary onError={() => {}}>
+        <ErrorBoundary>
           <QueryClientProvider>
             <UserProvider />
             <Outlet />
