@@ -1,0 +1,82 @@
+@use "../_commons" as commons;
+
+.QuizForm {
+  @include commons.section-container;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.QuizForm__Header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.QuizForm__Form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.QuizForm__SectionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+
+  .QuizForm__SectionCard {
+    flex-grow: 1;
+    max-width: 50%;
+  }
+}
+
+.QuizForm__SectionCard {
+  padding: 0;
+}
+
+.QuizForm__Section {
+  display: flex;
+  flex-direction: column;
+}
+
+.QuizForm__SectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+}
+
+.QuizForm__FieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.QuizForm__FieldRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3);
+
+
+  >* {
+    flex-grow: 1;
+    min-width: 200px;
+  }
+}
+
+.QuizForm__SwitchField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+}
+
+.QuizForm__Actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: commons.$spacing-md;
+}

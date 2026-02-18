@@ -1,0 +1,36 @@
+@use "../commons" as commons;
+
+.QuizQuestionField {
+  display: flex;
+  flex-direction: column;
+  gap: commons.$spacing-md;
+  padding: commons.$spacing-md;
+}
+
+.QuizQuestionField__QuestionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.QuizQuestionField__Answers {
+  display: flex;
+  flex-direction: column;
+  gap: commons.$spacing-sm;
+}
+
+.QuizQuestionField__Answer {
+  display: flex;
+  align-items: center;
+  gap: commons.$spacing-sm;
+}
+
+.QuizQuestionField__AnswerInput {
+  flex-grow: 1;
+}
+
+.QuizQuestionField__Actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: commons.$spacing-sm;
+}
