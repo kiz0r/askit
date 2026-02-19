@@ -10,15 +10,32 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { Link as RouterLink } from '@tanstack/react-router';
-import { DateTime } from 'effect';
+import { DateTime, Equal } from 'effect';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 import { isQuizzesLoadingAtom, quizzesAtom } from '../store';
 import { stringFilter } from '../utils/stringFilter';
-import { Quiz, QuizVisibility } from './Quiz';
+import type { Quiz, QuizVisibility } from './Quiz';
 import { QuizCard } from './QuizCard';
-import { QuizId } from './QuizId';
+import type { QuizId } from './QuizId';
 import styles from './QuizList.module.scss';
+
+function sortQuizzes(quizzes: readonly Quiz[]): readonly Quiz[] {
+  return quizzes.toSorted((quizA, quizB) => {
+    // Sort by last updated date descending (most recently updated first)
+    if (!Equal.equals(quizA.updatedAt, quizB.updatedAt)) {
+      return DateTime.lessThan(quizB.updatedAt, quizA.updatedAt) ? -1 : 1;
+    }
+
+    // If updated dates are equal, sort by creation date
+    if (!Equal.equals(quizA.createdAt, quizB.createdAt)) {
+      return DateTime.lessThan(quizB.createdAt, quizA.createdAt) ? -1 : 1;
+    }
+
+    // If both dates are equal, sort by title
+    return quizA.title.localeCompare(quizB.title);
+  });
+}
 
 function filterQuizzes(quizzes: ReadonlyMap<QuizId, Quiz>, filter: QuizFilter): readonly Quiz[] {
   const filteredItems: /* mutable */ Quiz[] = [];
@@ -38,10 +55,7 @@ function filterQuizzes(quizzes: ReadonlyMap<QuizId, Quiz>, filter: QuizFilter): 
     filteredItems.push(quiz);
   }
 
-  return filteredItems.toSorted((quizA, quizB) => {
-    // Sort by creation date descending
-    return DateTime.lessThan(quizB.createdAt, quizA.createdAt) ? -1 : 1;
-  });
+  return sortQuizzes(filteredItems);
 }
 
 type FilterQuizVisibility = 'all' | QuizVisibility;
