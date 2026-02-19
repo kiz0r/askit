@@ -1,0 +1,47 @@
+@use "../commons" as commons;
+
+.QuizList {
+  @include commons.section-container;
+
+  display: flex;
+  flex-direction: column;
+  gap: commons.$spacing-md;
+  flex-grow: 1;
+}
+
+.QuizList__FilterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.QuizList__FilterInput {
+  flex-grow: 1;
+  max-width: 320px;
+}
+
+.QuizList__NoResults {
+  display: inline-flex;
+  justify-content: center;
+  align-self: center;
+  flex-direction: column;
+  gap: commons.$spacing-sm;
+  flex-grow: 1;
+}
+
+.QuizList__List {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: commons.$spacing-sm;
+}
+
+.QuizList__LoadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  flex-direction: column;
+  gap: commons.$spacing-sm;
+  flex-grow: 1;
+}

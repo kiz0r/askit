@@ -14,7 +14,7 @@ export const Route = createFileRoute('/')({
           <Link to='/auth/register'>Register</Link>
         </li>
         <li>
-          <Link to='/dashboard'>Dashboard</Link>
+          <Link to='/quizzes'>Dashboard</Link>
         </li>
       </ul>
     </div>

@@ -9,7 +9,7 @@ export const NotFound = React.memo(() => {
       <Heading as='h1'>The page you are looking for does not exist.</Heading>
       <div className={styles.NotFound__Actions}>
         <Button asChild>
-          <RouterLink to='/dashboard'>Dashboard</RouterLink>
+          <RouterLink to='/quizzes'>Dashboard</RouterLink>
         </Button>
         <Button variant='surface' asChild>
           <RouterLink to='/'>Home</RouterLink>

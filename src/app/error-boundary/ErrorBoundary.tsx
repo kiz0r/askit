@@ -3,7 +3,7 @@ import { ErrorBoundaryUi } from './ErrorBoundaryUi';
 
 type Props = {
   readonly children: React.ReactNode;
-  readonly onError: (error: Error) => void;
+  readonly onError?: (error: Error) => void;
 };
 
 type State = {
@@ -20,7 +20,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
   state: State = {};
 
   componentDidCatch(error: Error) {
-    this.props.onError(error);
+    if (this.props.onError != null) {
+      this.props.onError(error);
+    }
   }
 
   render() {

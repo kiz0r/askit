@@ -1,9 +1,9 @@
-@use "../common" as common;
+@use "../commons" as commons;
 
 .AuthLayout__Header {}
 
 .AuthLayout__HeaderContainer {
-  @include common.section-container;
+  @include commons.section-container;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -23,7 +23,7 @@
 }
 
 .AuthLayout__Container {
-  @include common.section-container;
+  @include commons.section-container;
   display: flex;
   justify-content: center;
   align-items: center;

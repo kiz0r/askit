@@ -1,14 +1,16 @@
+@use "../../commons" as commons;
+
 .NotFound {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: commons.$spacing-lg;
   align-items: center;
   justify-content: center;
 }
 
 .NotFound__Actions {
   display: flex;
-  gap: 1rem;
+  gap: commons.$spacing-md;
   align-items: center;
 }
