@@ -13,9 +13,9 @@
     "dev": "vite dev",
     "fmt:write": "biome check . --write --error-on-warnings",
     "fmt": "biome check . --error-on-warnings",
-    "prepare": "pnpm /prepare#/",
-    "prepare#effect": "effect-language-service patch",
-    "prepare#husky": "husky",
+    "prepare": "pnpm /prepare:/",
+    "prepare:effect": "effect-language-service patch",
+    "prepare:husky": "husky",
     "test": "vitest run --passWithNoTests",
     "validate": "tsc --project 'tsconfig.json' --noEmit"
   },

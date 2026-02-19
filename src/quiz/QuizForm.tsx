@@ -99,13 +99,6 @@ export const QuizForm = React.memo((props: Props) => {
     name: 'questions',
   });
 
-  const onSubmit = React.useCallback(
-    (data: QuizFormInput) => {
-      props.onSubmit(data);
-    },
-    [props.onSubmit]
-  );
-
   return (
     <div className={styles.QuizForm}>
       <div className={styles.QuizForm__Header}>
@@ -118,7 +111,7 @@ export const QuizForm = React.memo((props: Props) => {
         <Heading size='6'>{props.heading}</Heading>
       </div>
 
-      <form className={styles.QuizForm__Form} onSubmit={form.handleSubmit(onSubmit)}>
+      <form className={styles.QuizForm__Form} onSubmit={form.handleSubmit(props.onSubmit)}>
         <div className={styles.QuizForm__SectionsGrid}>
           <Card className={styles.QuizForm__SectionCard}>
             <div className={styles.QuizForm__Section}>

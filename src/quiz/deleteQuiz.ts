@@ -1,7 +1,7 @@
-import { Effect, Schema } from 'effect';
+import { Effect } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
-import { QuizId } from './QuizId';
+import type { QuizId } from './QuizId';
 
 export const deleteQuiz = Effect.fn('deleteQuiz')(function* (quizId: QuizId) {
   const apiUrl = yield* AskitServerUrl;

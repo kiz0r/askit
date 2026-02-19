@@ -28,9 +28,3 @@
 .QuizQuestionField__AnswerInput {
   flex-grow: 1;
 }
-
-.QuizQuestionField__Actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: commons.$spacing-sm;
-}
