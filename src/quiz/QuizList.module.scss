@@ -20,6 +20,11 @@
   max-width: 320px;
 }
 
+.QuizList__Selects {
+  display: flex;
+  gap: commons.$spacing-sm;
+}
+
 .QuizList__NoResults {
   display: inline-flex;
   justify-content: center;

@@ -10,15 +10,48 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { Link as RouterLink } from '@tanstack/react-router';
-import { DateTime } from 'effect';
+import { DateTime, Equal } from 'effect';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 import { isQuizzesLoadingAtom, quizzesAtom } from '../store';
 import { stringFilter } from '../utils/stringFilter';
-import { Quiz, QuizVisibility } from './Quiz';
+import type { Quiz, QuizVisibility } from './Quiz';
 import { QuizCard } from './QuizCard';
-import { QuizId } from './QuizId';
+import type { QuizId } from './QuizId';
 import styles from './QuizList.module.scss';
+
+type SortRule = 'updatedAt' | 'createdAt' | 'title';
+
+function sortQuizzes(quizzes: readonly Quiz[], sortBy: SortRule): readonly Quiz[] {
+  return quizzes.toSorted((quizA, quizB) => {
+    switch (sortBy) {
+      case 'updatedAt': {
+        if (!Equal.equals(quizA.updatedAt, quizB.updatedAt)) {
+          return DateTime.lessThan(quizB.updatedAt, quizA.updatedAt) ? -1 : 1;
+        }
+
+        return quizA.title.localeCompare(quizB.title);
+      }
+
+      case 'createdAt': {
+        if (!Equal.equals(quizA.createdAt, quizB.createdAt)) {
+          return DateTime.lessThan(quizB.createdAt, quizA.createdAt) ? -1 : 1;
+        }
+
+        return quizA.title.localeCompare(quizB.title);
+      }
+
+      case 'title': {
+        return quizA.title.localeCompare(quizB.title);
+      }
+
+      default: {
+        const _exhaustiveCheck: never = sortBy;
+        return _exhaustiveCheck;
+      }
+    }
+  });
+}
 
 function filterQuizzes(quizzes: ReadonlyMap<QuizId, Quiz>, filter: QuizFilter): readonly Quiz[] {
   const filteredItems: /* mutable */ Quiz[] = [];
@@ -38,10 +71,7 @@ function filterQuizzes(quizzes: ReadonlyMap<QuizId, Quiz>, filter: QuizFilter): 
     filteredItems.push(quiz);
   }
 
-  return filteredItems.toSorted((quizA, quizB) => {
-    // Sort by creation date descending
-    return DateTime.lessThan(quizB.createdAt, quizA.createdAt) ? -1 : 1;
-  });
+  return sortQuizzes(filteredItems, filter.sortBy);
 }
 
 type FilterQuizVisibility = 'all' | QuizVisibility;
@@ -49,17 +79,25 @@ type FilterQuizVisibility = 'all' | QuizVisibility;
 type QuizFilter = {
   readonly visibility: FilterQuizVisibility;
   readonly searchQuery: string;
+  readonly sortBy: SortRule;
 };
 
 const defaultFilterValues: QuizFilter = {
   visibility: 'all',
   searchQuery: '',
+  sortBy: 'updatedAt',
 };
 
 const quizVisibilityOptions = [
   { value: 'all', label: 'All' },
   { value: 'public', label: 'Public' },
   { value: 'private', label: 'Private' },
+] as const;
+
+const sortByOptions = [
+  { value: 'updatedAt', label: 'Last Updated' },
+  { value: 'createdAt', label: 'Date Created' },
+  { value: 'title', label: 'Title' },
 ] as const;
 
 export const QuizList = React.memo(() => {
@@ -127,27 +165,53 @@ export const QuizList = React.memo(() => {
           ) : null}
         </TextField.Root>
 
-        <Select.Root
-          value={filter.visibility}
-          onValueChange={(nextValue: FilterQuizVisibility) => {
-            setFilter((prev) => ({
-              ...prev,
-              visibility: nextValue,
-            }));
-          }}
-        >
-          <Select.Trigger>
-            <Strong>Visibility: </Strong>
-            {quizVisibilityOptions.find((o) => o.value === filter.visibility)?.label}
-          </Select.Trigger>
-          <Select.Content side='bottom' align='center'>
-            {quizVisibilityOptions.map((option) => (
-              <Select.Item key={option.value} value={option.value}>
-                {option.label}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Root>
+        <div className={styles.QuizList__Selects}>
+          <Select.Root
+            size='1'
+            value={filter.visibility}
+            onValueChange={(nextValue: FilterQuizVisibility) => {
+              setFilter((prev) => ({
+                ...prev,
+                visibility: nextValue,
+              }));
+            }}
+          >
+            <Select.Trigger>
+              <Strong>Visibility: </Strong>
+              {quizVisibilityOptions.find((option) => option.value === filter.visibility)?.label}
+            </Select.Trigger>
+            <Select.Content side='bottom' align='center'>
+              {quizVisibilityOptions.map((option) => (
+                <Select.Item key={option.value} value={option.value}>
+                  {option.label}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
+
+          <Select.Root
+            size='1'
+            value={filter.sortBy}
+            onValueChange={(nextValue: SortRule) => {
+              setFilter((prev) => ({
+                ...prev,
+                sortBy: nextValue,
+              }));
+            }}
+          >
+            <Select.Trigger>
+              <Strong>Sort by: </Strong>
+              {sortByOptions.find((option) => option.value === filter.sortBy)?.label}
+            </Select.Trigger>
+            <Select.Content side='bottom' align='center'>
+              {sortByOptions.map((option) => (
+                <Select.Item key={option.value} value={option.value}>
+                  {option.label}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
+        </div>
       </div>
 
       <div className={styles.QuizList__List}>
