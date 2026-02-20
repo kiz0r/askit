@@ -95,6 +95,8 @@ export const QuizCard = React.memo((props: Props) => {
             {renderRelativeDateLabel(quiz.updatedAt, quiz.createdAt)}
           </Text>
 
+          <Separator orientation='vertical' size='1' />
+
           <Text size='1' color='gray'>
             ~{estimatedQuizTime}mins
           </Text>
