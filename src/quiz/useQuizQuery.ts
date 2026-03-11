@@ -5,11 +5,11 @@ import { Fetch } from 'fx-fetch';
 import { withAuthRetry } from '../auth/withAuthRetry';
 import { Notify } from '../notifications/Notify';
 import { envConfigProvider } from '../settings';
-import { fetchQuiz } from './fetchQuiz';
+import { getQuiz } from './getQuiz';
 import type { QuizId } from './QuizId';
 
 const fetchQuizProgram = (quizId: QuizId, navigateFn: NavigateFn) =>
-  fetchQuiz(quizId).pipe(
+  getQuiz(quizId).pipe(
     withAuthRetry,
     Effect.catchTags({
       ConfigError: Effect.die,

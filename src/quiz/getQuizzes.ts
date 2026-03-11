@@ -2,23 +2,24 @@ import { Effect, Schema } from 'effect';
 import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 import { Quiz } from './Quiz';
-import { type QuizFormInput, QuizFormInputSchema } from './QuizFormInput';
 
-const encodeBody = Schema.parseJson(QuizFormInputSchema).pipe(Schema.encode);
+const ResultSchema = Schema.Struct({
+  items: Quiz.pipe(Schema.Array),
+});
 
-export const createQuiz = Effect.fn('createQuiz')(function* (input: QuizFormInput) {
+export const getQuizzes = Effect.fn('getQuizzes')(function* () {
   const baseUrl = yield* AskitServerUrl;
   const url = Url.unsafeMake(`${baseUrl}/api/v1/quiz`);
 
   const request = Request.unsafeMake({
     url,
-    method: 'POST',
+    method: 'GET',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: yield* encodeBody(input),
   });
 
-  return yield* Fetch.fetchJsonWithSchema(request, Quiz);
+  const quizzes = yield* Fetch.fetchJsonWithSchema(request, ResultSchema);
+  return quizzes.items;
 });

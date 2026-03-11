@@ -1,45 +1,15 @@
 import { Effect, Schema } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
-import { QuizSchema } from './Quiz';
-import type { QuizFormInput } from './QuizFormInput';
+import { Quiz } from './Quiz';
+import { type QuizFormInput, QuizFormInputSchema } from './QuizFormInput';
 import type { QuizId } from './QuizId';
 
-const AnswerSchema = Schema.Struct({
-  text: Schema.String.pipe(Schema.nonEmptyString()),
-  isCorrect: Schema.Boolean,
-});
-
-const QuestionSchema = Schema.Struct({
-  text: Schema.String.pipe(Schema.nonEmptyString()),
-  answers: AnswerSchema.pipe(Schema.NonEmptyArray),
-});
-
-const SettingsSchema = Schema.Struct({
-  randomizeQuestions: Schema.Boolean,
-  randomizeAnswers: Schema.Boolean,
-  showImmediateFeedback: Schema.Boolean,
-  timePerQuestion: Schema.Number.pipe(Schema.positive()),
-  visibility: Schema.Literal('public', 'private'),
-  maxParticipants: Schema.Number.pipe(Schema.positive(), Schema.int()),
-});
-
-const EditQuizInputSchema = Schema.Struct({
-  title: Schema.String.pipe(Schema.nonEmptyString()),
-  description: Schema.String,
-  settings: SettingsSchema,
-  questions: QuestionSchema.pipe(Schema.NonEmptyArray),
-});
-
-const encodeBody = Schema.parseJson(EditQuizInputSchema).pipe(Schema.encode);
-const validateInput = Schema.decodeUnknown(EditQuizInputSchema);
+const encodeBody = Schema.parseJson(QuizFormInputSchema).pipe(Schema.encode);
 
 export const editQuiz = Effect.fn('editQuiz')(function* (quizId: QuizId, input: QuizFormInput) {
-  const validatedInput = yield* validateInput(input);
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/quiz/${quizId}`;
-
-  const body = yield* encodeBody(validatedInput);
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/quiz/${quizId}`);
 
   const request = Request.unsafeMake({
     url,
@@ -48,10 +18,8 @@ export const editQuiz = Effect.fn('editQuiz')(function* (quizId: QuizId, input: 
     headers: {
       'Content-Type': 'application/json',
     },
-    body,
+    body: yield* encodeBody(input),
   });
 
-  const response = yield* Fetch.fetchJsonWithSchema(request, QuizSchema);
-
-  return response;
+  return yield* Fetch.fetchJsonWithSchema(request, Quiz);
 });

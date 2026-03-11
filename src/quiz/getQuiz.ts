@@ -1,15 +1,15 @@
 import { Data, Effect } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 import { withStructuredError } from '../api/withStructuredError';
-import { QuizSchema } from './Quiz';
+import { Quiz } from './Quiz';
 import type { QuizId } from './QuizId';
 
 class QuizNotFoundError extends Data.TaggedError('QuizNotFoundError') {}
 
-export const fetchQuiz = Effect.fn('fetchQuiz')(function* (quizId: QuizId) {
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/quiz/${quizId}`;
+export const getQuiz = Effect.fn('getQuiz')(function* (quizId: QuizId) {
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/quiz/${quizId}`);
 
   const request = Request.unsafeMake({
     url,
@@ -20,9 +20,8 @@ export const fetchQuiz = Effect.fn('fetchQuiz')(function* (quizId: QuizId) {
     },
   });
 
-  const response = yield* Fetch.fetchJsonWithSchema(request, QuizSchema).pipe(
+  const quiz = yield* Fetch.fetchJsonWithSchema(request, Quiz).pipe(
     withStructuredError('QUIZ_NOT_FOUND', () => new QuizNotFoundError())
   );
-
-  return response;
+  return quiz;
 });
