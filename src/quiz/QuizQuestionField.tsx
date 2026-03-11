@@ -1,86 +1,103 @@
-import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
-import { Button, Checkbox, IconButton, Text, TextField } from '@radix-ui/themes';
-import React from 'react';
-import { type Control, Controller, type UseFormRegister, useFieldArray } from 'react-hook-form';
-import type { QuizFormInput } from './QuizFormInput';
+import { Cross2Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import { Badge, Button, Flex, IconButton, Radio, Text, TextField } from '@radix-ui/themes';
+import * as React from 'react';
+import type { QuizAnswerInput } from './QuizFormInput';
 import styles from './QuizQuestionField.module.scss';
 
 type Props = {
-  readonly control: Control<QuizFormInput>;
-  readonly register: UseFormRegister<QuizFormInput>;
   readonly questionIndex: number;
-  readonly onRemove?: () => void;
+  readonly totalQuestions: number;
+  readonly questionText: string;
+  readonly answers: readonly QuizAnswerInput[];
+  readonly correctAnswerIndex: number;
+  readonly onQuestionTextChange: (text: string) => void;
+  readonly onAnswerTextChange: (answerIndex: number, text: string) => void;
+  readonly onCorrectAnswerChange: (answerIndex: number) => void;
+  readonly onAnswerAdd: () => void;
+  readonly onAnswerRemove: (answerIndex: number) => void;
+  readonly onQuestionRemove?: () => void;
 };
 
 export const QuizQuestionField = React.memo((props: Props) => {
-  const answersField = useFieldArray({
-    control: props.control,
-    name: `questions.${props.questionIndex}.answers`,
-  });
-
+  const onQuestionRemove = props.onQuestionRemove ?? null;
   return (
     <div className={styles.QuizQuestionField}>
       <div className={styles.QuizQuestionField__QuestionHeader}>
-        <Text weight='medium'>Question {props.questionIndex + 1}.</Text>
-        {props.onRemove != null ? (
-          <IconButton type='button' variant='ghost' color='red' size='1' onClick={props.onRemove}>
-            <Cross2Icon />
-          </IconButton>
+        <Flex align='center' gap='2'>
+          <Badge size='2' variant='surface'>
+            {props.questionIndex + 1} / {props.totalQuestions}
+          </Badge>
+          <Text size='2' color='gray'>
+            Question
+          </Text>
+        </Flex>
+        {onQuestionRemove !== null ? (
+          <Button type='button' variant='ghost' color='red' size='1' onClick={onQuestionRemove}>
+            <TrashIcon />
+            Remove
+          </Button>
         ) : null}
       </div>
 
       <TextField.Root
-        {...props.register(`questions.${props.questionIndex}.text`, { required: true })}
-        placeholder='2 + 2 = ?'
+        value={props.questionText}
+        onChange={(event) => props.onQuestionTextChange(event.target.value)}
+        placeholder='Enter your question here...'
         autoComplete='off'
+        size='3'
       />
 
       <div className={styles.QuizQuestionField__Answers}>
-        <Text size='2' color='gray'>
-          Answers (check the correct one)
+        <Text size='2' weight='medium'>
+          Answers
+        </Text>
+        <Text size='1' color='gray'>
+          Select the correct answer
         </Text>
 
-        {answersField.fields.map((answer, answerIndex) => (
-          <div key={answer.id} className={styles.QuizQuestionField__Answer}>
-            <Controller
-              control={props.control}
-              name={`questions.${props.questionIndex}.answers.${answerIndex}.isCorrect`}
-              render={({ field }) => (
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
+        <div className={styles.QuizQuestionField__AnswersList}>
+          {props.answers.map((answer, index) => (
+            <div key={index} className={styles.QuizQuestionField__Answer}>
+              <Radio
+                size='2'
+                name={`question-${props.questionIndex}-correct`}
+                value={String(index)}
+                checked={props.correctAnswerIndex === index}
+                onClick={() => props.onCorrectAnswerChange(index)}
+              />
 
-            <TextField.Root
-              autoComplete='off'
-              className={styles.QuizQuestionField__AnswerInput}
-              {...props.register(`questions.${props.questionIndex}.answers.${answerIndex}.text`, {
-                required: true,
-              })}
-              placeholder={`Answer ${answerIndex + 1}`}
-            />
+              <TextField.Root
+                value={answer.text}
+                onChange={(e) => props.onAnswerTextChange(index, e.target.value)}
+                autoComplete='off'
+                className={styles.QuizQuestionField__AnswerInput}
+                placeholder={`Option ${index + 1}`}
+              />
 
-            {answersField.fields.length > 2 ? (
-              <IconButton
-                type='button'
-                variant='ghost'
-                color='gray'
-                size='1'
-                onClick={() => answersField.remove(answerIndex)}
-              >
-                <Cross2Icon />
-              </IconButton>
-            ) : null}
-          </div>
-        ))}
+              {props.answers.length > 2 ? (
+                <IconButton
+                  type='button'
+                  variant='ghost'
+                  color='gray'
+                  size='1'
+                  onClick={() => props.onAnswerRemove(index)}
+                >
+                  <Cross2Icon />
+                </IconButton>
+              ) : null}
+            </div>
+          ))}
+        </div>
 
         <Button
           type='button'
-          variant='outline'
+          variant='soft'
           size='1'
-          onClick={() => answersField.append({ text: '', isCorrect: false })}
+          className={styles.QuizQuestionField__AddAnswerBtn}
+          onClick={props.onAnswerAdd}
         >
           <PlusIcon />
-          Add Answer
+          Add Option
         </Button>
       </div>
     </div>

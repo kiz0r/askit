@@ -1,17 +1,32 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { ChevronLeftIcon } from '@radix-ui/react-icons';
+import { Button } from '@radix-ui/themes';
+import { createFileRoute, Link as RouterLink } from '@tanstack/react-router';
 import { QuizForm } from '../../quiz/QuizForm';
 import { useCreateQuiz } from '../../quiz/useCreateQuiz';
+import styles from './CreateQuizPage.module.scss';
 
 const CreateQuizPage = () => {
   const createQuiz = useCreateQuiz();
 
   return (
-    <QuizForm
-      heading='Create a new Quiz'
-      submitText='Create Quiz'
-      onSubmit={createQuiz.execute}
-      loading={createQuiz.isLoading}
-    />
+    <div className={styles.CreateQuizPage__Container}>
+      <div>
+        <Button asChild variant='outline' size='1'>
+          <RouterLink to='/quizzes'>
+            <ChevronLeftIcon />
+            Back
+          </RouterLink>
+        </Button>
+      </div>
+
+      <QuizForm
+        heading='Create a new Quiz'
+        submitText='Create Quiz'
+        quiz={null}
+        onSubmit={createQuiz.execute}
+        loading={createQuiz.isLoading}
+      />
+    </div>
   );
 };
 

@@ -1,0 +1,5 @@
+@use "../../commons" as commons;
+
+.EditQuizPage__Container {
+  @include commons.section-container;
+}

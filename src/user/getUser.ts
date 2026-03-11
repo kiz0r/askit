@@ -1,11 +1,11 @@
 import { Effect } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 import { UserSchema } from './User';
 
 export const getUser = Effect.fn('getUser')(function* () {
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/user/profile`;
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/user/profile`);
 
   const request = Request.unsafeMake({
     url,

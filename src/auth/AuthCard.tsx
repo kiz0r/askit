@@ -1,5 +1,5 @@
 import { Card, Heading, Text } from '@radix-ui/themes';
-import React from 'react';
+import * as React from 'react';
 import styles from './AuthCard.module.scss';
 
 type Props = {

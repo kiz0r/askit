@@ -1,65 +1,48 @@
-import { ChevronLeftIcon, PlusIcon } from '@radix-ui/react-icons';
+import { effectTsResolver } from '@hookform/resolvers/effect-ts';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { Button, Card, Heading, Select, Separator, Switch, Text } from '@radix-ui/themes';
-import { Link as RouterLink } from '@tanstack/react-router';
-import React from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Duration } from 'effect';
+import * as React from 'react';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { InputField } from '../auth/InputField';
 import { NumberField } from '../auth/NumberField';
 import { TextAreaField } from '../auth/TextAreaField';
-import type { Quiz } from './Quiz';
+import { Quiz } from './Quiz';
 import styles from './QuizForm.module.scss';
-import type { QuizFormInput } from './QuizFormInput';
+import { type QuizFormInput, QuizFormInputSchema } from './QuizFormInput';
 import { QuizQuestionField } from './QuizQuestionField';
+import { QuizLimits } from './quizLimits';
 
-/**
- * Max number of participants allowed in a quiz.
- */
-const QUIZ_MAX_PARTICIPANTS = 1000;
-
-/**
- * Min number of participants allowed in a quiz.
- */
-const QUIZ_MIN_PARTICIPANTS = 1;
-
-const defaultQuestion = {
-  text: '',
-  answers: [
-    { text: '', isCorrect: true },
-    { text: '', isCorrect: false },
-  ],
-};
-
-/**
- * Empty form state for creating a new quiz.
- */
-const emptyFormState: QuizFormInput = {
+const blankFormState = {
   title: '',
   description: '',
   settings: {
     randomizeQuestions: false,
     randomizeAnswers: false,
     showImmediateFeedback: true,
-    timePerQuestion: 30,
+    timePerQuestion: Duration.toMillis(QuizLimits.Duration.DefaultTimePerQuestion),
     visibility: 'private',
-    maxParticipants: QUIZ_MAX_PARTICIPANTS,
+    maxParticipants: QuizLimits.MaxParticipants,
   },
-  questions: [{ ...defaultQuestion, answers: [...defaultQuestion.answers] }],
-};
+  questions: [
+    {
+      text: '',
+      answers: [
+        { text: '', isCorrect: true },
+        { text: '', isCorrect: false },
+      ],
+    },
+  ],
+} as const satisfies QuizFormInput;
 
-/**
- * Converts an existing Quiz to form state for editing.
- */
+// TODO: better performance
 function quizToFormState(quiz: Quiz): QuizFormInput {
   return {
     title: quiz.title,
     description: quiz.description ?? '',
     settings: {
-      randomizeQuestions: quiz.settings.randomizeQuestions,
-      randomizeAnswers: quiz.settings.randomizeAnswers,
-      showImmediateFeedback: quiz.settings.showImmediateFeedback,
-      timePerQuestion: quiz.settings.timePerQuestion,
-      visibility: quiz.settings.visibility,
-      maxParticipants: quiz.settings.maxParticipants,
+      ...quiz.settings,
+      timePerQuestion: Duration.toMillis(quiz.settings.timePerQuestion),
     },
     questions: quiz.questions.map((question) => ({
       text: question.text,
@@ -74,22 +57,22 @@ function quizToFormState(quiz: Quiz): QuizFormInput {
 type Props = {
   readonly heading: string;
   readonly submitText: string;
-  readonly quiz?: Quiz;
-  readonly onSubmit: (data: QuizFormInput) => void;
+  readonly quiz: Quiz | null;
+  readonly onSubmit: (data: QuizFormInput) => Promise<Quiz | null>;
   readonly loading: boolean;
 };
 
 export const QuizForm = React.memo((props: Props) => {
   const initialState = React.useMemo(
-    () => (props.quiz != null ? quizToFormState(props.quiz) : emptyFormState),
+    () => (props.quiz !== null ? quizToFormState(props.quiz) : blankFormState),
     [props.quiz]
   );
 
   const form = useForm<QuizFormInput>({
     defaultValues: initialState,
+    resolver: effectTsResolver(QuizFormInputSchema),
   });
 
-  // Reset form when quiz data changes (e.g., after refetch following edit)
   React.useEffect(() => {
     form.reset(initialState);
   }, [form, initialState]);
@@ -99,40 +82,50 @@ export const QuizForm = React.memo((props: Props) => {
     name: 'questions',
   });
 
+  const values = useWatch({ control: form.control });
+  const settings = values.settings ?? blankFormState.settings;
+  const questions = values.questions ?? [];
+
+  const handleSubmit = React.useCallback(
+    async (data: QuizFormInput) => {
+      const result = await props.onSubmit(data);
+      if (result != null) {
+        form.reset(initialState);
+      }
+    },
+    [props.onSubmit, form, initialState]
+  );
+
   return (
     <div className={styles.QuizForm}>
-      <div className={styles.QuizForm__Header}>
-        <Button asChild variant='ghost' size='1'>
-          <RouterLink to='/quizzes'>
-            <ChevronLeftIcon />
-            Back
-          </RouterLink>
-        </Button>
-        <Heading size='6'>{props.heading}</Heading>
-      </div>
+      <Heading size='6'>{props.heading}</Heading>
 
-      <form className={styles.QuizForm__Form} onSubmit={form.handleSubmit(props.onSubmit)}>
+      <form className={styles.QuizForm__Form} onSubmit={form.handleSubmit(handleSubmit)}>
         <div className={styles.QuizForm__SectionsGrid}>
           <Card className={styles.QuizForm__SectionCard}>
             <div className={styles.QuizForm__Section}>
               <div className={styles.QuizForm__SectionHeader}>
                 <Heading size='4'>General Information</Heading>
               </div>
-
               <Separator size='4' />
-
               <div className={styles.QuizForm__FieldGroup}>
                 <InputField
-                  control={form.control}
-                  name='title'
+                  value={values.title ?? ''}
+                  onChange={(nextValue) =>
+                    form.setValue('title', nextValue, { shouldDirty: true, shouldValidate: true })
+                  }
                   label='Title'
                   type='text'
                   placeholder='My Awesome Quiz'
                 />
-
                 <TextAreaField
-                  control={form.control}
-                  name='description'
+                  value={values.description ?? ''}
+                  onChange={(nextValue) =>
+                    form.setValue('description', nextValue, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
                   label='Description'
                   placeholder='A brief quiz description'
                 />
@@ -140,93 +133,109 @@ export const QuizForm = React.memo((props: Props) => {
             </div>
           </Card>
 
-          {/* Settings Section */}
           <Card className={styles.QuizForm__SectionCard}>
             <div className={styles.QuizForm__Section}>
               <div className={styles.QuizForm__SectionHeader}>
                 <Heading size='4'>Settings</Heading>
               </div>
-
               <Separator size='4' />
-
               <div className={styles.QuizForm__FieldRow}>
                 <NumberField
-                  control={form.control}
-                  name='settings.timePerQuestion'
+                  // TODO: This is ugly → when value is 5 we cannot submit form
+                  value={Math.round(
+                    (settings.timePerQuestion ??
+                      Duration.toMillis(QuizLimits.Duration.DefaultTimePerQuestion)) / 1_000
+                  )}
+                  onChange={(nextValue) => {
+                    const seconds =
+                      nextValue ?? Duration.toSeconds(QuizLimits.Duration.DefaultTimePerQuestion);
+                    form.setValue('settings.timePerQuestion', seconds * 1_000, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    });
+                  }}
                   label='Time per question (seconds)'
-                  min={5}
-                  max={300}
+                  min={Duration.toSeconds(QuizLimits.Duration.MinTimePerQuestion)}
+                  max={Duration.toSeconds(QuizLimits.Duration.MaxTimePerQuestion)}
                 />
-
                 <NumberField
-                  control={form.control}
-                  name='settings.maxParticipants'
+                  value={settings.maxParticipants ?? QuizLimits.MaxParticipants}
+                  onChange={(nextValue) => {
+                    form.setValue(
+                      'settings.maxParticipants',
+                      nextValue ?? QuizLimits.MaxParticipants,
+                      { shouldDirty: true, shouldValidate: true }
+                    );
+                  }}
                   label='Max participants'
-                  min={QUIZ_MIN_PARTICIPANTS}
-                  max={QUIZ_MAX_PARTICIPANTS}
+                  min={QuizLimits.MinParticipants}
+                  max={QuizLimits.MaxParticipants}
                 />
-
-                <Controller
-                  control={form.control}
-                  name='settings.visibility'
-                  render={({ field }) => (
-                    <label>
-                      <Text as='span' size='2' color='gray'>
-                        Visibility
-                      </Text>
-                      <Select.Root value={field.value} onValueChange={field.onChange}>
-                        <Select.Trigger />
-                        <Select.Content>
-                          <Select.Item value='private'>Private</Select.Item>
-                          <Select.Item value='public'>Public</Select.Item>
-                        </Select.Content>
-                      </Select.Root>
-                    </label>
-                  )}
-                />
+                <div className={styles.QuizForm__SelectField}>
+                  <Text as='label' size='2' color='gray'>
+                    Visibility
+                  </Text>
+                  <Select.Root
+                    value={settings.visibility}
+                    onValueChange={(nextValue) =>
+                      form.setValue('settings.visibility', nextValue as 'public' | 'private', {
+                        // TODO: do not cast to literal type
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  >
+                    <Select.Trigger />
+                    <Select.Content>
+                      <Select.Item value='private'>Private</Select.Item>
+                      <Select.Item value='public'>Public</Select.Item>
+                    </Select.Content>
+                  </Select.Root>
+                </div>
               </div>
-
               <Separator size='4' />
-
               <div className={styles.QuizForm__FieldGroup}>
-                <Controller
-                  control={form.control}
-                  name='settings.randomizeQuestions'
-                  render={({ field }) => (
-                    <div className={styles.QuizForm__SwitchField}>
-                      <Text size='2'>Randomize questions order</Text>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </div>
-                  )}
-                />
-
-                <Controller
-                  control={form.control}
-                  name='settings.randomizeAnswers'
-                  render={({ field }) => (
-                    <div className={styles.QuizForm__SwitchField}>
-                      <Text size='2'>Randomize answers order</Text>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </div>
-                  )}
-                />
-
-                <Controller
-                  control={form.control}
-                  name='settings.showImmediateFeedback'
-                  render={({ field }) => (
-                    <div className={styles.QuizForm__SwitchField}>
-                      <Text size='2'>Show immediate feedback after each question</Text>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </div>
-                  )}
-                />
+                <div className={styles.QuizForm__SwitchField}>
+                  <Text size='2'>Randomize questions order</Text>
+                  <Switch
+                    checked={settings.randomizeQuestions}
+                    onCheckedChange={(nextValue) =>
+                      form.setValue('settings.randomizeQuestions', nextValue, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                </div>
+                <div className={styles.QuizForm__SwitchField}>
+                  <Text size='2'>Randomize answers order</Text>
+                  <Switch
+                    checked={settings.randomizeAnswers}
+                    onCheckedChange={(nextValue) =>
+                      form.setValue('settings.randomizeAnswers', nextValue, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                </div>
+                <div className={styles.QuizForm__SwitchField}>
+                  <Text size='2'>Show immediate feedback after each question</Text>
+                  <Switch
+                    checked={settings.showImmediateFeedback}
+                    onCheckedChange={(nextValue) =>
+                      form.setValue('settings.showImmediateFeedback', nextValue, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                </div>
               </div>
             </div>
           </Card>
         </div>
 
-        {/* Questions Section */}
         <Card className={styles.QuizForm__SectionCard}>
           <div className={styles.QuizForm__Section}>
             <div className={styles.QuizForm__SectionHeader}>
@@ -249,22 +258,89 @@ export const QuizForm = React.memo((props: Props) => {
                 Add Question
               </Button>
             </div>
-
             <Separator size='4' />
-
-            {questionsField.fields.map((question, questionIndex) => (
-              <QuizQuestionField
-                key={question.id}
-                control={form.control}
-                register={form.register}
-                questionIndex={questionIndex}
-                onRemove={
-                  questionsField.fields.length > 1
-                    ? () => questionsField.remove(questionIndex)
-                    : undefined
+            <div className={styles.QuizForm__QuestionsContainer}>
+              {questionsField.fields.map((field, questionIndex) => {
+                const question = questions.at(questionIndex) ?? null;
+                if (question === null) {
+                  return null;
                 }
-              />
-            ))}
+
+                const answers = question.answers ?? [];
+                const correctAnswerIndex = answers.findIndex((answer) => answer.isCorrect);
+
+                return (
+                  <React.Fragment key={field.id}>
+                    {questionIndex > 0 ? (
+                      <Separator size='4' className={styles.QuizForm__QuestionDivider} />
+                    ) : null}
+                    <QuizQuestionField
+                      questionIndex={questionIndex}
+                      totalQuestions={questionsField.fields.length}
+                      questionText={question.text ?? ''}
+                      answers={answers.map((answer) => ({
+                        text: answer.text ?? '',
+                        isCorrect: answer.isCorrect ?? false,
+                      }))}
+                      correctAnswerIndex={correctAnswerIndex >= 0 ? correctAnswerIndex : 0}
+                      onQuestionTextChange={(nextValue) => {
+                        form.setValue(`questions.${questionIndex}.text`, nextValue, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                      onAnswerTextChange={(answerIndex, nextValue) => {
+                        form.setValue(
+                          `questions.${questionIndex}.answers.${answerIndex}.text`,
+                          nextValue,
+                          { shouldDirty: true, shouldValidate: true }
+                        );
+                      }}
+                      onCorrectAnswerChange={(answerIndex) => {
+                        form.setValue(
+                          `questions.${questionIndex}.answers`,
+                          answers.map((answer, index) => ({
+                            text: answer.text ?? '',
+                            isCorrect: index === answerIndex,
+                          })),
+                          { shouldDirty: true, shouldValidate: true }
+                        );
+                      }}
+                      onAnswerAdd={() => {
+                        form.setValue(
+                          `questions.${questionIndex}.answers`,
+                          [
+                            ...answers.map((answer) => ({
+                              text: answer.text ?? '',
+                              isCorrect: answer.isCorrect ?? false,
+                            })),
+                            { text: '', isCorrect: false },
+                          ],
+                          { shouldDirty: true, shouldValidate: true }
+                        );
+                      }}
+                      onAnswerRemove={(answerIndex) => {
+                        form.setValue(
+                          `questions.${questionIndex}.answers`,
+                          answers
+                            .filter((_answer, index) => index !== answerIndex)
+                            .map((answer) => ({
+                              text: answer.text ?? '',
+                              isCorrect: answer.isCorrect ?? false,
+                            })),
+                          { shouldDirty: true, shouldValidate: true }
+                        );
+                      }}
+                      onQuestionRemove={
+                        questionsField.fields.length > 1
+                          ? () => questionsField.remove(questionIndex)
+                          : undefined
+                      }
+                    />
+                  </React.Fragment>
+                );
+              })}
+            </div>
           </div>
         </Card>
 
@@ -277,7 +353,6 @@ export const QuizForm = React.memo((props: Props) => {
           >
             Reset Changes
           </Button>
-
           <Button
             type='submit'
             loading={props.loading}

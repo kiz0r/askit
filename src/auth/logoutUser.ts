@@ -1,5 +1,5 @@
 import { Effect, Schema } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 
 const ResponseSchema = Schema.Struct({
@@ -7,8 +7,8 @@ const ResponseSchema = Schema.Struct({
 });
 
 export const logoutUser = Effect.fn('logoutUser')(function* () {
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/auth/logout`;
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/auth/logout`);
 
   const request = Request.unsafeMake({
     url,

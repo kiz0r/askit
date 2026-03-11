@@ -1,6 +1,6 @@
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { IconButton } from '@radix-ui/themes';
-import React from 'react';
+import * as React from 'react';
 import { useAppearance } from './useAppearance';
 
 export const AppearanceButton = React.memo(() => {

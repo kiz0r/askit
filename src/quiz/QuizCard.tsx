@@ -18,7 +18,7 @@ import {
 } from '@radix-ui/themes';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { DateTime, Duration } from 'effect';
-import React from 'react';
+import * as React from 'react';
 import { formatDateHumanFriendly } from '../utils/formatDateHumanFriendly';
 import { stringFilter } from '../utils/stringFilter';
 import type { Quiz } from './Quiz';

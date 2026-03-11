@@ -3,17 +3,17 @@ import { NavigateFn, useNavigate } from '@tanstack/react-router';
 import { Effect } from 'effect';
 import { Fetch } from 'fx-fetch';
 import { useSetAtom } from 'jotai';
-import React from 'react';
+import * as React from 'react';
 import { withAuthRetry } from '../auth/withAuthRetry';
 import { Notify } from '../notifications/Notify';
 import { envConfigProvider } from '../settings';
 import { isQuizzesLoadingAtom, quizzesAtom } from '../store';
-import { fetchQuizzes } from './fetchQuizzes';
+import { getQuizzes } from './getQuizzes';
 import type { Quiz } from './Quiz';
 import type { QuizId } from './QuizId';
 
 const fetchQuizzesProgram = (navigateFn: NavigateFn) =>
-  fetchQuizzes().pipe(
+  getQuizzes().pipe(
     withAuthRetry,
     Effect.catchTags({
       ConfigError: Effect.die,
@@ -93,7 +93,6 @@ export const useQuizzesQuery = () => {
     }
 
     const quizzes: /* mutable */ Map<QuizId, Quiz> = new Map();
-
     for (const quiz of query.data) {
       quizzes.set(quiz.quizId, quiz);
     }

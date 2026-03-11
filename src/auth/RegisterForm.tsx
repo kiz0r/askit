@@ -2,8 +2,8 @@ import { effectTsResolver } from '@hookform/resolvers/effect-ts';
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { Button, IconButton, Link, Text } from '@radix-ui/themes';
 import { Link as RouterLink } from '@tanstack/react-router';
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import * as React from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { AuthCard } from './AuthCard';
 import { InputField } from './InputField';
 import styles from './RegisterForm.module.scss';
@@ -22,6 +22,7 @@ export const RegisterForm = React.memo(() => {
     resolver: effectTsResolver(RegisterCredentialsSchema),
   });
 
+  const values = useWatch({ control: form.control });
   const registerUser = useRegisterUser();
 
   return (
@@ -43,13 +44,23 @@ export const RegisterForm = React.memo(() => {
           registerUser.execute(data);
         })}
       >
-        <InputField control={form.control} name='username' label='Username' type='text' />
-
-        <InputField control={form.control} name='email' label='Email' type='email' />
+        <InputField
+          value={values.username ?? ''}
+          onChange={(value) => form.setValue('username', value, { shouldValidate: true })}
+          label='Username'
+          type='text'
+        />
 
         <InputField
-          control={form.control}
-          name='password'
+          value={values.email ?? ''}
+          onChange={(value) => form.setValue('email', value, { shouldValidate: true })}
+          label='Email'
+          type='email'
+        />
+
+        <InputField
+          value={values.password ?? ''}
+          onChange={(value) => form.setValue('password', value, { shouldValidate: true })}
           label='Password'
           type={isPasswordVisible ? 'text' : 'password'}
           rightElement={

@@ -1,5 +1,5 @@
 import { Effect, Schema } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 import { UserSchema } from '../user/User';
 
@@ -27,8 +27,8 @@ const encodeBody = Schema.parseJson(BodySchema).pipe(Schema.encode);
  * Function to log in a user with given credentials.
  */
 export const loginUser = Effect.fn('loginUser')(function* (params: LoginCredentials) {
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/auth/login`;
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/auth/login`);
 
   const body = yield* encodeBody(params);
 

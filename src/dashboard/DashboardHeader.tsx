@@ -2,7 +2,7 @@ import { ExitIcon, PlusIcon } from '@radix-ui/react-icons';
 import { Avatar, Button, Popover, Text } from '@radix-ui/themes';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
-import React from 'react';
+import * as React from 'react';
 import { AppearanceSelect } from '../appearance/AppearanceSelect';
 import { useLogout } from '../auth/useLogout';
 import { userAtom } from '../store';

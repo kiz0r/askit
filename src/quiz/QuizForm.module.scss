@@ -1,39 +1,32 @@
-@use "../_commons" as commons;
+@use "../commons" as commons;
 
 .QuizForm {
-  @include commons.section-container;
-
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: commons.$spacing-lg;
 }
 
 .QuizForm__Header {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
+  align-items: center;
+  gap: commons.$spacing-md;
 }
 
 .QuizForm__Form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: commons.$spacing-xl;
 }
 
 .QuizForm__SectionsGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-
-  .QuizForm__SectionCard {
-    flex-grow: 1;
-    max-width: 50%;
-  }
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: commons.$spacing-xl;
 }
 
 .QuizForm__SectionCard {
   padding: 0;
+  overflow: hidden;
 }
 
 .QuizForm__Section {
@@ -45,38 +38,62 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-3);
+  padding: commons.$spacing-lg;
+  background-color: commons.$gray-alpha2;
 }
 
 .QuizForm__FieldGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  gap: commons.$spacing-md;
+  padding: commons.$spacing-lg;
 }
 
 .QuizForm__FieldRow {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-  padding: var(--space-3);
+  gap: commons.$spacing-lg;
+  padding: commons.$spacing-lg;
+}
 
-
-  >* {
-    flex-grow: 1;
-    min-width: 200px;
-  }
+.QuizForm__SelectField {
+  display: flex;
+  flex-direction: column;
+  gap: commons.$spacing-xs;
 }
 
 .QuizForm__SwitchField {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-2) 0;
+  padding: commons.$spacing-xs commons.$spacing-md;
+  border-radius: commons.$radius-sm;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: commons.$gray-alpha2;
+  }
+}
+
+.QuizForm__QuestionsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.QuizForm__QuestionDivider {
+  margin: 0;
 }
 
 .QuizForm__Actions {
   display: flex;
   justify-content: flex-end;
   gap: commons.$spacing-md;
+  padding: commons.$spacing-lg;
+  background-color: commons.$background-color;
+  border-top: 1px solid commons.$gray-alpha4;
+  margin-inline: calc(-1 * commons.$spacing-lg);
+  margin-bottom: calc(-1 * commons.$spacing-md);
+  padding-inline: commons.$spacing-lg;
+  position: sticky;
+  bottom: 0;
 }

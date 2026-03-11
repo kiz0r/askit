@@ -1,5 +1,5 @@
 import { Card, Code, Heading } from '@radix-ui/themes';
-import React from 'react';
+import * as React from 'react';
 import styles from './ErrorBoundaryUi.module.scss';
 
 type Props = {
