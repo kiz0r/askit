@@ -1,5 +1,5 @@
 import { Theme } from '@radix-ui/themes';
-import React from 'react';
+import * as React from 'react';
 import styles from './AppearanceProvider.module.scss';
 import { useAppearance } from './useAppearance';
 
@@ -14,10 +14,10 @@ export const AppearanceProvider = React.memo((props: Props) => {
     <Theme
       appearance={appearance.style}
       className={styles.AppearanceProvider}
-      accentColor='blue'
+      accentColor='indigo'
       grayColor='auto'
       radius='medium'
-      panelBackground='translucent'
+      panelBackground='solid'
       scaling='100%'
     >
       {props.children}

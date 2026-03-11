@@ -1,12 +1,16 @@
-import React from 'react';
+// TODO: Rewrite it to not use Regex
+// TODO: Add tests for it
+import * as React from 'react';
 
 /**
  * Checks if a character is whitespace.
+ * @internal
  */
 const isWhitespace = (char: string): boolean => /\s/.test(char);
 
 /**
  * Removes all whitespace from a string.
+ * @internal
  */
 const stripWhitespace = (str: string): string => {
   return str.replace(/\s+/g, '');

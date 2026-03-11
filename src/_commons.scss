@@ -1,5 +1,5 @@
 // Colors
-$outline-color: var(--gray-a6);
+$background-color: var(--color-background);
 
 $gray1: var(--gray-1);
 $gray2: var(--gray-2);
@@ -14,16 +14,33 @@ $gray10: var(--gray-10);
 $gray11: var(--gray-11);
 $gray12: var(--gray-12);
 
+$gray-alpha1: var(--gray-a1);
+$gray-alpha2: var(--gray-a2);
+$gray-alpha3: var(--gray-a3);
+$gray-alpha4: var(--gray-a4);
+$gray-alpha5: var(--gray-a5);
+$gray-alpha6: var(--gray-a6);
+$gray-alpha7: var(--gray-a7);
+$gray-alpha8: var(--gray-a8);
+$gray-alpha9: var(--gray-a9);
+$gray-alpha10: var(--gray-a10);
+$gray-alpha11: var(--gray-a11);
+$gray-alpha12: var(--gray-a12);
+
 // Spacing
 $spacing-xs: var(--space-1);
 $spacing-sm: var(--space-2);
 $spacing-md: var(--space-3);
 $spacing-lg: var(--space-4);
+$spacing-xl: var(--space-5);
+
+// Border Radius
+$radius-sm: var(--radius-2);
+$radius-md: var(--radius-3);
 
 // Mixins
 @mixin section-container {
-  padding-inline: $spacing-lg;
-  padding-block: $spacing-md;
+  padding: $spacing-lg;
   width: 100%;
   max-width: 1760px;
   margin-inline: auto;

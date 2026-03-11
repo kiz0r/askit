@@ -16,7 +16,7 @@
 
 .AuthCard__Header {
   @include inner-section;
-  border-bottom: 1px solid #{commons.$outline-color};
+  border-bottom: 1px solid #{commons.$gray-alpha6};
 }
 
 .AuthCard__Body {
@@ -29,5 +29,5 @@
   flex-direction: row;
   justify-content: center;
 
-  border-top: 1px solid #{commons.$outline-color};
+  border-top: 1px solid #{commons.$gray-alpha6};
 }

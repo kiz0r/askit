@@ -12,7 +12,7 @@ import {
 import { Link as RouterLink } from '@tanstack/react-router';
 import { DateTime, Equal } from 'effect';
 import { useAtomValue } from 'jotai';
-import React from 'react';
+import * as React from 'react';
 import { isQuizzesLoadingAtom, quizzesAtom } from '../store';
 import { stringFilter } from '../utils/stringFilter';
 import type { Quiz, QuizVisibility } from './Quiz';

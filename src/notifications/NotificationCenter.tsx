@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Toaster as BaseToaster, type ToastClassnames } from 'sonner';
 import { useAppearance } from '../appearance/useAppearance';
 import styles from './NotificationCenter.module.scss';

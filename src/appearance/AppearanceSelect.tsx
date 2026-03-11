@@ -1,6 +1,6 @@
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
 import { Select, Strong } from '@radix-ui/themes';
-import React from 'react';
+import * as React from 'react';
 import type { Appearance } from './Appearance';
 import styles from './AppearanceSelect.module.scss';
 import { useAppearance } from './useAppearance';

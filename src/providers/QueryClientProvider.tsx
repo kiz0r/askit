@@ -1,5 +1,5 @@
 import { QueryClientProvider as BaseQueryClientProvider, QueryClient } from '@tanstack/react-query';
-import React from 'react';
+import * as React from 'react';
 
 export const queryClient = new QueryClient({
   defaultOptions: {

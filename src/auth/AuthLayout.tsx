@@ -1,7 +1,7 @@
 import { Button, Text } from '@radix-ui/themes';
 import { Link as RouterLink, useLocation, useNavigate } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
-import React from 'react';
+import * as React from 'react';
 import { AppearanceButton } from '../appearance/AppearanceButton';
 import { isUserLoadingAtom } from '../store';
 import { useIsUserLoggedIn } from '../user/useIsUserLoggedIn';

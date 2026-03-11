@@ -3,7 +3,7 @@
 .DashboardHeader {
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-bottom-color: #{commons.$outline-color};
+  border-bottom-color: #{commons.$gray-alpha6};
 }
 
 .DashboardHeader__Container {
@@ -40,7 +40,7 @@
   gap: commons.$spacing-sm;
   padding: commons.$spacing-sm;
 
-  border-bottom: 1px solid #{commons.$outline-color};
+  border-bottom: 1px solid #{commons.$gray-alpha6};
 }
 
 .DashboardHeader__PopoverActions {

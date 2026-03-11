@@ -1,5 +1,5 @@
 import { Effect, Schema } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 import { UserSchema } from '../user/User';
 
@@ -20,8 +20,8 @@ const BodySchema = Schema.Struct({
 const encodeBody = Schema.parseJson(BodySchema).pipe(Schema.encode);
 
 export const registerUser = Effect.fn('registerUser')(function* (params: RegisterCredentials) {
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/auth/register`;
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/auth/register`);
 
   const body = yield* encodeBody(params);
 

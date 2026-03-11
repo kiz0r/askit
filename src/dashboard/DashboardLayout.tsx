@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { DashboardHeader } from './DashboardHeader';
 import styles from './DashboardLayout.module.scss';
 

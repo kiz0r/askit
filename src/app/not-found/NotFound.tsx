@@ -1,6 +1,6 @@
 import { Button, Heading } from '@radix-ui/themes';
 import { Link as RouterLink } from '@tanstack/react-router';
-import React from 'react';
+import * as React from 'react';
 import styles from './NotFound.module.scss';
 
 export const NotFound = React.memo(() => {

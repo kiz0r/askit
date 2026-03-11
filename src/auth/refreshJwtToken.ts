@@ -1,5 +1,5 @@
 import { Data, Effect, Schema } from 'effect';
-import { Fetch, Request } from 'fx-fetch';
+import { Fetch, Request, Url } from 'fx-fetch';
 import { AskitServerUrl } from '../api/apiUrls';
 import { withStructuredError } from '../api/withStructuredError';
 
@@ -12,8 +12,8 @@ class RefreshTokenInvalidError extends Data.TaggedError('RefreshTokenInvalidErro
 class RefreshTokenExpiredError extends Data.TaggedError('RefreshTokenExpiredError') {}
 
 export const refreshJwtToken = Effect.fn('refreshJwtToken')(function* () {
-  const apiUrl = yield* AskitServerUrl;
-  const url = `${apiUrl}/api/v1/auth/refresh`;
+  const baseUrl = yield* AskitServerUrl;
+  const url = Url.unsafeMake(`${baseUrl}/api/v1/auth/refresh`);
 
   const request = Request.unsafeMake({
     url,
