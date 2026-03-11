@@ -2,7 +2,7 @@
 
 1. Clone the repository
 ```bash
-git clone git@github.com:kiz0r/askit-frontend.git
+git clone git@github.com:kiz0r/askit.git
 ```
 
 2. Navigate to the project directory

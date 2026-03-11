@@ -1,4 +1,5 @@
 # Ask IT!
+> Easy to use quiz app for everyone
 
 ## Documentation
 - [Project Setup](./docs/PROJECT_SETUP.md)
