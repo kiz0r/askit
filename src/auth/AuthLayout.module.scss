@@ -1,9 +1,14 @@
 @use "../commons" as commons;
 
-.AuthLayout__Header {}
+.AuthLayout__Header {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #{commons.$gray-alpha6};
+}
 
 .AuthLayout__HeaderContainer {
   @include commons.section-container;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,6 +29,7 @@
 
 .AuthLayout__Container {
   @include commons.section-container;
+
   display: flex;
   justify-content: center;
   align-items: center;
