@@ -1,8 +1,9 @@
-import { Button, Text } from '@radix-ui/themes';
+import { Button } from '@radix-ui/themes';
 import { Link as RouterLink, useLocation, useNavigate } from '@tanstack/react-router';
 import { useAtomValue } from 'jotai';
 import * as React from 'react';
 import { AppearanceButton } from '../appearance/AppearanceButton';
+import { Logo } from '../shared/ui/Logo';
 import { isUserLoadingAtom } from '../store';
 import { useIsUserLoggedIn } from '../user/useIsUserLoggedIn';
 import styles from './AuthLayout.module.scss';
@@ -35,7 +36,7 @@ export const AuthLayout = React.memo((props: Props) => {
     <>
       <header className={styles.AuthLayout__Header}>
         <div className={styles.AuthLayout__HeaderContainer}>
-          <Text>Ask It!</Text>
+          <Logo />
 
           <div className={styles.AuthLayout__HeaderActions}>
             <AppearanceButton />

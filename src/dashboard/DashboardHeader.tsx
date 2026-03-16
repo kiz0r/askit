@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 import * as React from 'react';
 import { AppearanceSelect } from '../appearance/AppearanceSelect';
 import { useLogout } from '../auth/useLogout';
+import { Logo } from '../shared/ui/Logo';
 import { userAtom } from '../store';
 import styles from './DashboardHeader.module.scss';
 
@@ -30,11 +31,7 @@ export const DashboardHeader = React.memo(() => {
   return (
     <header className={styles.DashboardHeader}>
       <div className={styles.DashboardHeader__Container}>
-        <div className={styles.DashboardHeader__Logo}>
-          <Text size='4' weight='bold'>
-            Ask it!
-          </Text>
-        </div>
+        <Logo />
 
         <div className={styles.DashboardHeader__RightContent}>
           <Button asChild variant='solid'>
