@@ -141,7 +141,6 @@ export const QuizForm = React.memo((props: Props) => {
               <Separator size='4' />
               <div className={styles.QuizForm__FieldRow}>
                 <NumberField
-                  // TODO: This is ugly → when value is 5 we cannot submit form
                   value={Math.round(
                     (settings.timePerQuestion ??
                       Duration.toMillis(QuizLimits.Duration.DefaultTimePerQuestion)) / 1_000
