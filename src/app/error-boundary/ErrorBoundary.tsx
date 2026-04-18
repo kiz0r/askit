@@ -1,33 +1,39 @@
 import * as React from 'react';
-import { ErrorBoundaryUi } from './ErrorBoundaryUi';
+import { ErrorBoundaryView } from './ErrorBoundaryView';
 
 type Props = {
   readonly children: React.ReactNode;
-  readonly onError?: (error: Error) => void;
+  readonly onError: (error: Error) => void;
 };
 
 type State = {
-  readonly error?: Error;
+  readonly error: Error | null;
 };
 
 export class ErrorBoundary extends React.Component<Props, State> {
+  readonly state: State = {
+    error: null,
+  };
+
   static getDerivedStateFromError(error: Error): State {
     return {
       error,
     };
   }
 
-  state: State = {};
-
-  componentDidCatch(error: Error) {
+  readonly componentDidCatch = (error: Error, _info: React.ErrorInfo) => {
     if (this.props.onError != null) {
       this.props.onError(error);
     }
-  }
+  };
+
+  readonly resetError = () => {
+    this.setState({ error: null });
+  };
 
   render() {
     if (this.state.error != null) {
-      return <ErrorBoundaryUi error={this.state.error} />;
+      return <ErrorBoundaryView error={this.state.error} onReset={this.resetError} />;
     }
 
     return this.props.children;
