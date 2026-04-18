@@ -1,5 +1,4 @@
-// biome-ignore lint/suspicious/noShadowRestrictedNames: `Function` is EffectTS module
-import { Effect, Function, Option, Schema } from 'effect';
+import { Effect, Function as Fn, Option, Schema } from 'effect';
 import { Response } from 'fx-fetch';
 
 const ErrorSchema = Schema.Struct({
@@ -52,4 +51,4 @@ export const withStructuredError: {
   ): (
     self: Effect.Effect<A, E | Response.NotOkError, R>
   ) => Effect.Effect<A, E | Response.NotOkError | TError, R>;
-} = Function.dual(3, withStructuredErrorFn);
+} = Fn.dual(3, withStructuredErrorFn);
