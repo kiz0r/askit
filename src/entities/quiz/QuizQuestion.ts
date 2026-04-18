@@ -1,11 +1,12 @@
 import { Schema } from 'effect';
+import { PositiveInt } from '@/shared/utils';
 import { QuizAnswer } from './QuizAnswer';
-import { QuizAnswerId } from './QuizAnswerId';
 import { QuizQuestionId } from './QuizQuestionId';
 
 export class QuizQuestion extends Schema.Class<QuizQuestion>('QuizQuestion')({
+  position: Schema.Number.pipe(Schema.fromBrand(PositiveInt)),
+  timeLimit: Schema.DurationFromMillis,
   questionId: Schema.String.pipe(Schema.fromBrand(QuizQuestionId)),
   text: Schema.String.pipe(Schema.nonEmptyString()),
-  correctAnswerId: Schema.String.pipe(Schema.fromBrand(QuizAnswerId)),
-  answers: QuizAnswer.pipe(Schema.NonEmptyArray),
+  answers: Schema.NonEmptyArray(QuizAnswer),
 }) {}
