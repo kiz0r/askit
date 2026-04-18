@@ -1,9 +1,13 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import ReactDOM from 'react-dom/client';
 import { routeTree } from './routeTree.gen';
-import '@radix-ui/themes/styles.css';
-import './main.scss';
-import { NotFound } from './app/not-found/NotFound';
+import './globals.css';
+import { Provider as StoreProvider } from 'jotai';
+import { ErrorBoundary } from '@/app/error-boundary';
+import { NotFound } from '@/app/NotFound';
+import { QueryClientProvider } from '@/app/providers/QueryClientProvider';
+import { AppearanceProvider } from '@/shared/appearance';
+import { store } from '@/shared/store';
 
 // Create a new router instance
 const router = createRouter({
@@ -29,4 +33,18 @@ if (rootElement === null) {
   throw new Error('Failed to find the root element');
 }
 
-ReactDOM.createRoot(rootElement).render(<RouterProvider router={router} />);
+ReactDOM.createRoot(rootElement).render(
+  <ErrorBoundary
+    onError={() => {
+      // TODO [FUTURE]: add error logging
+    }}
+  >
+    <StoreProvider store={store}>
+      <AppearanceProvider>
+        <QueryClientProvider>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </AppearanceProvider>
+    </StoreProvider>
+  </ErrorBoundary>
+);
