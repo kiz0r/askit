@@ -1,10 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { DateTime, Duration, Effect } from 'effect';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   Calendar,
   ChevronLeft,
   Clock,
+  Heart,
   HelpCircle,
   Pencil,
   Play,
@@ -13,7 +15,7 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 import { queryClient } from '@/app/providers/QueryClientProvider';
-import type { Quiz, QuizId } from '@/entities/quiz';
+import { favoriteQuizIdsAtom, type Quiz, type QuizId } from '@/entities/quiz';
 import { SessionExpiredError, withStandardErrors } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { toast } from '@/shared/toasts';
@@ -38,7 +40,9 @@ import {
   TooltipTrigger,
 } from '@/shared/ui';
 import { cn, formatDateHumanFriendly, stringFilter } from '@/shared/utils';
+import { addFavorite } from './api/addFavorite';
 import { deleteQuiz } from './api/deleteQuiz';
+import { removeFavorite } from './api/removeFavorite';
 
 const deleteQuizProgram = (quizId: QuizId) =>
   deleteQuiz(quizId).pipe(
@@ -57,7 +61,6 @@ const deleteQuizProgram = (quizId: QuizId) =>
     }),
     Effect.tap((result) => {
       if (result == null) {
-        // Error happened → notification is already shown
         return;
       }
 
@@ -114,10 +117,47 @@ export const QuizCard = React.memo((props: Props) => {
   const [isActionsExpanded, setIsActionsExpanded] = React.useState(false);
 
   const quiz = props.quiz;
+  const favoritedIds = useAtomValue(favoriteQuizIdsAtom);
+  const setFavoritedIds = useSetAtom(favoriteQuizIdsAtom);
+  const isFavorited = favoritedIds.has(quiz.quizId);
   const quizSettings = quiz.settings;
   const searchQuery = props.searchQuery ?? '';
   const dateInfo = renderRelativeDateLabel(quiz.updatedAt, quiz.createdAt);
   const estimatedTime = formatDuration(quiz.estimatedTime);
+
+  const toggleFavorite = useMutation({
+    mutationKey: ['toggleFavorite', quiz.quizId] as const,
+    mutationFn: (quizId: QuizId) => {
+      const action = isFavorited ? removeFavorite : addFavorite;
+      return action(quizId).pipe(Effect.provide(applicationLayer), Effect.runPromise);
+    },
+    onMutate: (quizId) => {
+      setFavoritedIds((prev: ReadonlySet<QuizId>) => {
+        const next = new Set<QuizId>(prev);
+        if (isFavorited) {
+          next.delete(quizId);
+        } else {
+          next.add(quizId);
+        }
+        return next;
+      });
+    },
+    onError: () => {
+      setFavoritedIds((prev: ReadonlySet<QuizId>) => {
+        const next = new Set<QuizId>(prev);
+        if (isFavorited) {
+          next.add(quiz.quizId);
+        } else {
+          next.delete(quiz.quizId);
+        }
+        return next;
+      });
+      toast.error({ title: 'Failed to update favorites' });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] as const });
+    },
+  });
 
   const deleteQuiz = useMutation({
     mutationKey: ['deleteQuiz'] as const,
@@ -218,6 +258,16 @@ export const QuizCard = React.memo((props: Props) => {
               </Link>
             </Button>
 
+            <Button
+              size='icon-sm'
+              variant='ghost'
+              className='rounded-md'
+              disabled={toggleFavorite.isPending}
+              onClick={() => toggleFavorite.mutate(quiz.quizId)}
+            >
+              <Heart className={cn('size-4', isFavorited && 'fill-rose-500 text-rose-500')} />
+            </Button>
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -255,9 +305,7 @@ export const QuizCard = React.memo((props: Props) => {
           </div>
         </div>
 
-        <Button
-          disabled // TODO:Uncomment when game functionality is implemented.
-        >
+        <Button disabled>
           <Play className='size-4' />
           Play
         </Button>

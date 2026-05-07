@@ -1,4 +1,4 @@
-import { ArrowDownAZ, Eye, Search, X } from 'lucide-react';
+import { ArrowDownAZ, Eye, Heart, Search, X } from 'lucide-react';
 import * as React from 'react';
 import type { QuizVisibility } from '@/entities/quiz';
 import {
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui';
+import { cn } from '@/shared/utils';
 
 const sortByOptions = [
   { value: 'updatedAt', label: 'Last Updated' },
@@ -33,12 +34,14 @@ export type QuizFilterState = {
   readonly visibility: FilterQuizVisibility;
   readonly searchQuery: string;
   readonly sortBy: SortRule;
+  readonly favoritesOnly: boolean;
 };
 
 export const defaultQuizFilter: QuizFilterState = {
   visibility: 'all',
   searchQuery: '',
   sortBy: 'updatedAt',
+  favoritesOnly: false,
 };
 
 type Props = {
@@ -76,7 +79,15 @@ export const QuizFilter = React.memo((props: Props) => {
         </InputGroupAddon>
       </InputGroup>
 
-      <div className='flex gap-2'>
+      <div className='flex gap-2 items-center'>
+        <Button
+          variant={filter.favoritesOnly ? 'secondary' : 'outline'}
+          size='default'
+          onClick={() => onFilterChange({ ...filter, favoritesOnly: !filter.favoritesOnly })}
+        >
+          <Heart className={cn('size-4', filter.favoritesOnly && 'fill-rose-500 text-rose-500')} />
+          Favorites
+        </Button>
         <Select
           value={filter.visibility}
           onValueChange={(value: FilterQuizVisibility) =>

@@ -3,7 +3,13 @@ import { DateTime, Equal } from 'effect';
 import { useAtomValue } from 'jotai';
 import { ListX, Plus, SearchX } from 'lucide-react';
 import * as React from 'react';
-import { isQuizzesLoadingAtom, type Quiz, type QuizId, quizzesAtom } from '@/entities/quiz';
+import {
+  favoriteQuizIdsAtom,
+  isQuizzesLoadingAtom,
+  type Quiz,
+  type QuizId,
+  quizzesAtom,
+} from '@/entities/quiz';
 import {
   Button,
   Empty,
@@ -17,6 +23,7 @@ import {
 import { stringFilter } from '@/shared/utils';
 import { QuizCard } from './QuizCard';
 import { defaultQuizFilter, QuizFilter, type QuizFilterState, type SortRule } from './QuizFilter';
+import { useFavoritesQuery } from './useFavoritesQuery';
 
 function sortQuizzes(quizzes: readonly Quiz[], sortBy: SortRule): readonly Quiz[] {
   return quizzes.toSorted((quizA, quizB) => {
@@ -51,11 +58,17 @@ function sortQuizzes(quizzes: readonly Quiz[], sortBy: SortRule): readonly Quiz[
 
 function filterQuizzes(
   quizzes: ReadonlyMap<QuizId, Quiz>,
-  filter: QuizFilterState
+  filter: QuizFilterState,
+  favoriteIds: ReadonlySet<QuizId>
 ): readonly Quiz[] {
   const filteredItems: /* mutable */ Quiz[] = [];
 
   for (const quiz of quizzes.values()) {
+    const isFavorite = favoriteIds.has(quiz.quizId);
+    if (filter.favoritesOnly && !isFavorite) {
+      continue;
+    }
+
     if (filter.visibility !== 'all' && quiz.settings.visibility !== filter.visibility) {
       continue;
     }
@@ -77,8 +90,13 @@ export const QuizList = React.memo(() => {
   const [filter, setFilter] = React.useState<QuizFilterState>(() => defaultQuizFilter);
   const quizzes = useAtomValue(quizzesAtom);
   const isLoading = useAtomValue(isQuizzesLoadingAtom);
+  const favoriteIds = useAtomValue(favoriteQuizIdsAtom);
+  useFavoritesQuery();
 
-  const filteredQuizzes = React.useMemo(() => filterQuizzes(quizzes, filter), [quizzes, filter]);
+  const filteredQuizzes = React.useMemo(
+    () => filterQuizzes(quizzes, filter, favoriteIds),
+    [quizzes, filter, favoriteIds]
+  );
 
   if (isLoading) {
     return (

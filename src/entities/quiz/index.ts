@@ -5,4 +5,8 @@ export { QuizId } from './QuizId';
 export { QuizQuestion } from './QuizQuestion';
 export { QuizQuestionId } from './QuizQuestionId';
 export { quizLimits } from './quizLimits';
-export { favoritedQuizIdsAtom, isQuizzesLoadingAtom, quizzesAtom } from './store';
+export {
+  favoriteQuizIdsAtom,
+  isQuizzesLoadingAtom,
+  quizzesAtom,
+} from './store';
