@@ -4,3 +4,4 @@ import type { QuizId } from './QuizId';
 
 export const quizzesAtom = atom<ReadonlyMap<QuizId, Quiz>>(new Map());
 export const isQuizzesLoadingAtom = atom<boolean>(false);
+export const favoritedQuizIdsAtom = atom<ReadonlySet<QuizId>>(new Set<QuizId>());

@@ -5,4 +5,4 @@ export { QuizId } from './QuizId';
 export { QuizQuestion } from './QuizQuestion';
 export { QuizQuestionId } from './QuizQuestionId';
 export { quizLimits } from './quizLimits';
-export { isQuizzesLoadingAtom, quizzesAtom } from './store';
+export { favoritedQuizIdsAtom, isQuizzesLoadingAtom, quizzesAtom } from './store';
