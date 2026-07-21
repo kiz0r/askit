@@ -28,11 +28,6 @@ import {
   FieldGroup,
   FieldLabel,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Separator,
   TagInput,
   Textarea,
@@ -75,7 +70,7 @@ function quizToFormState(quiz: Quiz | null): QuizFormInput {
     description: quiz.description ?? '',
     tags: [...quiz.tags],
     settings: {
-      visibility: quiz.settings.visibility,
+      visibility: 'private',
       maxParticipants: quiz.settings.maxParticipants,
     },
     questions: quiz.questions.map((question) => ({
@@ -356,30 +351,6 @@ export const QuizForm = (props: Props) => {
           <Separator />
 
           <FieldGroup>
-            <Controller
-              name='settings.visibility'
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Visibility</FieldLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={isEditDisabled}
-                  >
-                    <SelectTrigger aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder='Select visibility' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='private'>Private</SelectItem>
-                      <SelectItem value='public'>Public</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
-                </Field>
-              )}
-            />
-
             <Controller
               name='settings.maxParticipants'
               control={form.control}

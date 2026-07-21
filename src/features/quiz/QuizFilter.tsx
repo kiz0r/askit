@@ -1,5 +1,4 @@
-import { ArrowDownAZIcon, EyeIcon, HeartIcon, SearchIcon, XIcon } from 'lucide-react';
-import type { QuizVisibility } from '@/entities/quiz';
+import { ArrowDownAZIcon, HeartIcon, SearchIcon, XIcon } from 'lucide-react';
 import {
   Button,
   InputGroup,
@@ -20,24 +19,15 @@ const sortByOptions = [
   { value: 'title', label: 'Title' },
 ] as const;
 
-const quizVisibilityOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'public', label: 'Public' },
-  { value: 'private', label: 'Private' },
-] as const;
-
 export type SortRule = (typeof sortByOptions)[number]['value'];
-type FilterQuizVisibility = 'all' | QuizVisibility;
 
 export type QuizFilterState = {
-  readonly visibility: FilterQuizVisibility;
   readonly searchQuery: string;
   readonly sortBy: SortRule;
   readonly favoritesOnly: boolean;
 };
 
 export const defaultQuizFilter: QuizFilterState = {
-  visibility: 'all',
   searchQuery: '',
   sortBy: 'updatedAt',
   favoritesOnly: false,
@@ -89,27 +79,6 @@ export const QuizFilter = (props: Props) => {
           />
           Favorites
         </Button>
-
-        <Select
-          value={filter.visibility}
-          onValueChange={(value: FilterQuizVisibility) =>
-            onFilterChange({ ...filter, visibility: value })
-          }
-        >
-          <SelectTrigger className='w-35'>
-            <EyeIcon className='size-4 text-muted-foreground' />
-            <SelectValue placeholder='Visibility' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {quizVisibilityOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
 
         <Select
           value={filter.sortBy}
