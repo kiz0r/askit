@@ -1,0 +1,19 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    <!-- Favicon Styles -->
+    .favicon-background { fill: #000 }
+    .favicon-foreground { fill: #D9D9D9 }
+
+    @media (prefers-color-scheme: dark) {
+      .favicon-background { fill: #fff }
+      .favicon-foreground { fill: #1a1a1a }
+    }
+  </style>
+
+  <path
+    class="favicon-background"
+    d="M23.8225 0H7.94083C3.55523 0 0 3.58172 0 8V24C0 28.4183 3.55523 32 7.94083 32H23.8225C28.2081 32 31.7633 28.4183 31.7633 24V8C31.7633 3.58172 28.2081 0 23.8225 0Z" />
+  <path
+    class="favicon-foreground"
+    d="M9.69553 22L14.2694 9.22H17.4855L22.0594 22H19.2364L18.3074 19.282H13.4297L12.5006 22H9.69553ZM14.198 17.032H17.5569L15.8775 12.1L14.198 17.032Z" />
+</svg>

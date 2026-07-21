@@ -1,9 +1,0 @@
-@use "../../commons" as commons;
-
-.CreateQuizPage__Container {
-  @include commons.section-container;
-
-  display: flex;
-  flex-direction: column;
-  gap: commons.$spacing-lg;
-}

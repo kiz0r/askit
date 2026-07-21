@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
+  head: () => ({
+    meta: [{ title: 'AskIt' }],
+  }),
   component: () => (
     <div>
       <h1>Ask IT! Home Page</h1>
