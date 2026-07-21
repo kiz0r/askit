@@ -1,6 +1,7 @@
 {
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
+    "verbatimModuleSyntax": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -29,13 +30,9 @@
     "strict": true,
     "target": "ES2022",
     "useDefineForClassFields": false,
-    "plugins": [
-      {
-        "name": "@effect/language-service",
-        "namespaceImportPackages": ["effect"],
-        "topLevelNamedReexports": "follow"
-      }
-    ]
+    "paths": {
+      "@/*": ["./src/*"]
+    },
   }
 }
 

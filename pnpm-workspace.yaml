@@ -1,2 +1,9 @@
+nodeLinker: hoisted
+shellEmulator: true
+minimumReleaseAge: 1440
+
 onlyBuiltDependencies:
   - '@biomejs/biome'
+
+allowBuilds:
+  msw: false
