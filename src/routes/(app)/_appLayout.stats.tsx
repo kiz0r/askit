@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { DateTime, Duration, Effect } from 'effect';
 import { useAtomValue } from 'jotai';
-import { ChevronDownIcon, ChevronRightIcon, TrophyIcon } from 'lucide-react';
+import { ChevronDownIcon, ChevronRightIcon, DownloadIcon, TrophyIcon } from 'lucide-react';
 import * as React from 'react';
 import { type QuizId, quizzesAtom } from '@/entities/quiz';
 import {
@@ -18,6 +18,11 @@ import { getGameHistory } from '@/features/user';
 import { applicationLayer } from '@/shared/settings';
 import {
   Badge,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Select,
   SelectContent,
   SelectGroup,
@@ -27,7 +32,7 @@ import {
   Skeleton,
   TagList,
 } from '@/shared/ui';
-import { cn, formatDuration } from '@/shared/utils';
+import { cn, downloadCsv, downloadJson, formatDuration } from '@/shared/utils';
 
 const ACTIVITY_HISTORY_LIMIT = 100;
 
@@ -45,7 +50,7 @@ const dayLabelFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day
 function buildActivityPoints(
   startedAtDates: readonly DateTime.Utc[],
   days: ActivityRangeDays
-): ActivityPoint[] {
+): readonly ActivityPoint[] {
   const now = DateTime.unsafeNow();
   const counts = new Map<string, number>();
 
@@ -54,7 +59,7 @@ function buildActivityPoints(
     counts.set(dayKey, (counts.get(dayKey) ?? 0) + 1);
   }
 
-  const points: ActivityPoint[] = [];
+  const points: /* mutable */ ActivityPoint[] = [];
   for (let offset = days - 1; offset >= 0; offset--) {
     const day = DateTime.subtract(now, { days: offset });
     const dayKey = DateTime.formatIso(DateTime.startOf(day, 'day')).slice(0, 10);
@@ -157,13 +162,90 @@ const StatsPage = () => {
     return list.filter((quiz) => quiz.tags.includes(tagFilter));
   }, [quizzes, tagFilter]);
 
+  const handleExportCsv = () => {
+    const headers = [
+      'Quiz',
+      'Tags',
+      'Times Played',
+      'Average Score',
+      'Players',
+      'Average Duration (s)',
+    ] as const;
+    const rows = [...quizzes.values()].map((quiz) => {
+      const stats = statsMap.get(quiz.quizId);
+      const hasStats = stats != null && stats.timesPlayed > 0;
+      return [
+        quiz.title,
+        quiz.tags.join('; '),
+        String(stats?.timesPlayed ?? 0),
+        hasStats ? String(Math.round(stats.averageScore)) : '',
+        String(stats?.totalPlayers ?? 0),
+        hasStats ? String(Math.round(stats.averageDurationSeconds)) : '',
+      ];
+    });
+    const date = new Date().toISOString().slice(0, 10);
+    downloadCsv(`Askit-Statistics-${date}.csv`, headers, rows).pipe(Effect.runSync);
+  };
+
+  const handleExportJson = () => {
+    const data = [...quizzes.values()].map((quiz) => {
+      const stats = statsMap.get(quiz.quizId);
+      return {
+        quiz: quiz.title,
+        tags: quiz.tags,
+        timesPlayed: stats?.timesPlayed ?? 0,
+        totalPlayers: stats?.totalPlayers ?? 0,
+        averageScore: stats?.averageScore ?? 0,
+        averageDurationSeconds: stats?.averageDurationSeconds ?? 0,
+        topPlayers: (stats?.topPlayers ?? []).map((player) => ({
+          nickname: player.nickname,
+          score: player.score,
+          playedAt: DateTime.formatIso(player.playedAt),
+        })),
+      };
+    });
+    const date = new Date().toISOString().slice(0, 10);
+    downloadJson(`Askit-Statistics-${date}.json`, data).pipe(Effect.orDie, Effect.runSync);
+  };
+
   const isLoading = statsQuery.isFetching && !statsQuery.data;
 
   return (
     <div className='flex flex-col gap-6'>
-      <div>
-        <h1 className='text-2xl font-bold'>Analytics</h1>
-        <p className='text-muted-foreground mt-1'>Performance stats for your quizzes</p>
+      <div className='flex items-start justify-between gap-4'>
+        <div>
+          <h1 className='text-2xl font-bold'>Analytics</h1>
+          <p className='text-muted-foreground mt-1'>Performance stats for your quizzes</p>
+        </div>
+
+        <div className='inline-flex'>
+          <Button
+            variant='outline'
+            className='rounded-r-none'
+            disabled={quizzes.size === 0 || isLoading}
+            onClick={handleExportCsv}
+          >
+            <DownloadIcon className='size-4' />
+            Export CSV
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                className='rounded-l-none border-l-0'
+                disabled={quizzes.size === 0 || isLoading}
+                aria-label='More export options'
+              >
+                <ChevronDownIcon className='size-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuItem onClick={handleExportCsv}>Export as CSV</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportJson}>Export as JSON</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <AnalyticsSummary
