@@ -5,7 +5,7 @@ import { useSetAtom } from 'jotai';
 import * as React from 'react';
 import { isQuizzesLoadingAtom, type Quiz, type QuizId, quizzesAtom } from '@/entities/quiz';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { getQuizzes } from './api/getQuizzes';
@@ -46,7 +46,7 @@ export const useQuizzesQuery = () => {
     staleTime: 30_000, // Consider data fresh for 30 seconds
     retry: false,
     queryFn: ({ signal }) =>
-      Effect.runPromise(
+      runProgram(
         getQuizzesProgram.pipe(
           Effect.provide(applicationLayer),
           Effect.ensureRequirementsType<never>()

@@ -6,7 +6,7 @@ import { InfoIcon } from 'lucide-react';
 import * as React from 'react';
 import type { Quiz } from '@/entities/quiz';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import {
@@ -106,7 +106,7 @@ export const GameSetupForm = (props: Props) => {
         showImmediateFeedback: formState.showImmediateFeedback,
       };
 
-      return createRoomProgram(input).pipe(Effect.provide(applicationLayer), Effect.runPromise);
+      return createRoomProgram(input).pipe(Effect.provide(applicationLayer), runProgram);
     },
     onSuccess: (room) => {
       navigate({ to: '/host/$roomCode', params: { roomCode: room.roomCode } });

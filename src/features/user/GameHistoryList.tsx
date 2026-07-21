@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { DateTime, Duration, Effect } from 'effect';
 import { TrophyIcon } from 'lucide-react';
 import * as React from 'react';
+import { runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import {
   Button,
@@ -137,7 +138,7 @@ export const GameHistoryList = () => {
         role: roleFilter,
       }).pipe(Effect.provide(applicationLayer));
 
-      return Effect.runPromise(program, { signal });
+      return runProgram(program, { signal });
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {

@@ -4,7 +4,7 @@ import { Effect, Schedule } from 'effect';
 import { Fetch } from 'fx-fetch';
 import { Controller, useForm } from 'react-hook-form';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { Button, Field, FieldError, FieldLabel, Input } from '@/shared/ui';
@@ -59,7 +59,7 @@ export const UpdatePasswordForm = (props: Props) => {
       program(input).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: () => {
       form.reset();

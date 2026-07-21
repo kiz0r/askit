@@ -8,7 +8,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import * as React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthState, authStateAtom } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import {
@@ -71,7 +71,7 @@ export const RegisterForm = () => {
       program(credentials).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: (user) => {
       setAuthState(AuthState.authenticated(user));

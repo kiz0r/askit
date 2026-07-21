@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Effect, Schedule } from 'effect';
 import { Fetch } from 'fx-fetch';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { createQuiz } from './api/createQuiz';
@@ -48,7 +48,7 @@ export const CreateQuizForm = () => {
       program(input).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: (quiz) => {
       Toast.success({ title: 'Quiz created successfully' });

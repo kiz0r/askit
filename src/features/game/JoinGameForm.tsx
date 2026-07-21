@@ -7,7 +7,7 @@ import { ArrowRightIcon, HashIcon, UserIcon } from 'lucide-react';
 import * as React from 'react';
 import { sessionPlayerIdAtom } from '@/entities/game';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { Button, Field, Input, Label } from '@/shared/ui';
@@ -93,7 +93,7 @@ export const JoinGameForm = (props: Props) => {
       joinRoomProgram(input).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: (player, joinRoomInput) => {
       const roomCode = joinRoomInput.roomCode.trim().toUpperCase();
