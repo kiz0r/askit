@@ -1,5 +1,5 @@
 export { cn } from './cn';
-export { downloadJson } from './downloadJson';
+export { downloadCsv, downloadJson } from './downloadFile';
 export { formatDate } from './formatDate';
 export { formatDuration, formatDurationEstimate } from './formatDuration';
 export { generateArrayFromLength } from './generateArrayFromLength';
