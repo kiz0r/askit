@@ -93,10 +93,6 @@ function filterQuizzes(
   const filteredItems: /* mutable */ Quiz[] = [];
 
   for (const quiz of quizzes.values()) {
-    if (filter.visibility !== 'all' && quiz.settings.visibility !== filter.visibility) {
-      continue;
-    }
-
     if (filter.favoritesOnly && !quiz.isFavorited) {
       continue;
     }

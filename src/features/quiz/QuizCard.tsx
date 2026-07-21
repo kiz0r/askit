@@ -6,21 +6,18 @@ import {
   ClockIcon,
   DownloadIcon,
   EditIcon,
-  GlobeIcon,
   HeartIcon,
   HelpCircleIcon,
-  LockIcon,
   PlayIcon,
   Trash2Icon,
   UsersIcon,
 } from 'lucide-react';
-import type { Quiz, QuizId, QuizSettings } from '@/entities/quiz';
+import type { Quiz, QuizId } from '@/entities/quiz';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import {
-  Badge,
   Button,
   Card,
   CardContent,
@@ -99,44 +96,6 @@ type Props = {
   readonly searchQuery?: string;
 };
 
-function renderQuizVisibilityBadge(visibility: QuizSettings['visibility']) {
-  const baseBadgeStyle =
-    'shrink-0 flex items-center gap-1.5 select-none rounded-sm text-sm tracking-wide py-2.5';
-
-  switch (visibility) {
-    case 'public': {
-      return (
-        <Badge
-          className={cn(
-            baseBadgeStyle,
-            'text-green-500 border-green-300 bg-green-300/30 dark:border-green-900 dark:bg-green-900/30'
-          )}
-        >
-          <GlobeIcon /> Public
-        </Badge>
-      );
-    }
-
-    case 'private': {
-      return (
-        <Badge
-          className={cn(
-            baseBadgeStyle,
-            'text-gray-500 border-gray-300 bg-gray-300/30 dark:border-gray-600 dark:bg-gray-600/10'
-          )}
-        >
-          <LockIcon /> Private
-        </Badge>
-      );
-    }
-
-    default: {
-      const _exhaustiveCheck: never = visibility;
-      return null;
-    }
-  }
-}
-
 const exportQuizProgram = (quizId: QuizId, filename: string) =>
   exportQuiz(quizId).pipe(
     Effect.tap((data) => {
@@ -182,7 +141,7 @@ export const QuizCard = (props: Props) => {
       toggleFavoriteProgram(quiz.quizId).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quizzes'] as const });
@@ -196,7 +155,7 @@ export const QuizCard = (props: Props) => {
       return exportQuizProgram(quiz.quizId, filename).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       );
     },
   });
@@ -207,7 +166,7 @@ export const QuizCard = (props: Props) => {
       deleteQuizProgram(quizId).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: () => {
       Toast.success({
@@ -228,8 +187,6 @@ export const QuizCard = (props: Props) => {
           <CardTitle className='line-clamp-2 leading-tight'>
             {stringFilter.highlight(quiz.title, searchQuery)}
           </CardTitle>
-
-          {renderQuizVisibilityBadge(quizSettings.visibility)}
         </div>
 
         {hasDescription ? (
