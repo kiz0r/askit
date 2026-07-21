@@ -1,5 +1,5 @@
 import { SessionExpiredError } from '@/entities/user';
-import { type HttpError, isHttpErrorRecoverable } from '@/shared/api';
+import { type HttpError, isHttpErrorRecoverable, ValidationError } from '@/shared/api';
 import {
   GameAlreadyStartedError,
   HostCannotJoinError,
@@ -15,6 +15,7 @@ type GameError =
   | GameAlreadyStartedError
   | RoomFullError
   | HostCannotJoinError
+  | ValidationError
   | HttpError;
 
 /**
@@ -47,6 +48,10 @@ export function isGameErrorRecoverable(error: GameError): boolean {
   }
 
   if (error instanceof HostCannotJoinError) {
+    return false;
+  }
+
+  if (error instanceof ValidationError) {
     return false;
   }
 

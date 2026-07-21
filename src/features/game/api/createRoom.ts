@@ -4,7 +4,12 @@ import { RoomCodeSchema, SessionIdSchema } from '@/entities/game';
 import type { QuizId } from '@/entities/quiz';
 import { QuizIdSchema } from '@/entities/quiz';
 import { withAuthError } from '@/entities/user';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 import { RoomNotFoundError } from './errors';
 
 const RoomResponseSchema = Schema.Struct({
@@ -50,5 +55,6 @@ export const createRoom = Effect.fn('createRoom')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

@@ -1,11 +1,12 @@
 import { SessionExpiredError } from '@/entities/user';
 import { InvalidCredentialsError, UsernameAlreadyExistsError } from '@/features/auth';
-import { type HttpError, isHttpErrorRecoverable } from '@/shared/api';
+import { type HttpError, isHttpErrorRecoverable, ValidationError } from '@/shared/api';
 
 type UserError =
   | SessionExpiredError
   | UsernameAlreadyExistsError
   | InvalidCredentialsError
+  | ValidationError
   | HttpError;
 
 /**
@@ -26,6 +27,10 @@ export function isUserErrorRecoverable(error: UserError): boolean {
   }
 
   if (error instanceof InvalidCredentialsError) {
+    return false;
+  }
+
+  if (error instanceof ValidationError) {
     return false;
   }
 

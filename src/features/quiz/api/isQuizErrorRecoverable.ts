@@ -1,5 +1,5 @@
 import { SessionExpiredError } from '@/entities/user';
-import { type HttpError, isHttpErrorRecoverable } from '@/shared/api';
+import { type HttpError, isHttpErrorRecoverable, ValidationError } from '@/shared/api';
 import {
   InvalidQuizDataError,
   QuizAccessDeniedError,
@@ -13,6 +13,7 @@ type QuizError =
   | QuizAccessDeniedError
   | QuizPublishedError
   | InvalidQuizDataError
+  | ValidationError
   | HttpError;
 
 /**
@@ -41,6 +42,10 @@ export function isQuizErrorRecoverable(error: QuizError): boolean {
   }
 
   if (error instanceof InvalidQuizDataError) {
+    return false;
+  }
+
+  if (error instanceof ValidationError) {
     return false;
   }
 

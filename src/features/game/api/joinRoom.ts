@@ -2,7 +2,12 @@ import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { PlayerIdSchema } from '@/entities/game';
 import { withAuthError } from '@/entities/user';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 import {
   GameAlreadyStartedError,
   HostCannotJoinError,
@@ -52,5 +57,6 @@ export const joinRoom = Effect.fn('joinRoom')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

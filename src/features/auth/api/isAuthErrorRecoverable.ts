@@ -1,4 +1,4 @@
-import { type HttpError, isHttpErrorRecoverable } from '@/shared/api';
+import { type HttpError, isHttpErrorRecoverable, ValidationError } from '@/shared/api';
 import {
   AccountLockedError,
   InvalidCredentialsError,
@@ -13,6 +13,7 @@ type AuthError =
   | RegistrationFailedError
   | UsernameAlreadyExistsError
   | UserInactiveError
+  | ValidationError
   | HttpError;
 
 /**
@@ -41,6 +42,10 @@ export function isAuthErrorRecoverable(error: AuthError): boolean {
   }
 
   if (error instanceof UserInactiveError) {
+    return false;
+  }
+
+  if (error instanceof ValidationError) {
     return false;
   }
 

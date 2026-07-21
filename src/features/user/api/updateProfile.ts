@@ -2,7 +2,12 @@ import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { User, withAuthError } from '@/entities/user';
 import { UsernameAlreadyExistsError } from '@/features/auth';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 
 const UpdateProfileInputSchema = Schema.Struct({
   username: Schema.NonEmptyString,
@@ -35,5 +40,6 @@ export const updateProfile = Effect.fn('updateProfile')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

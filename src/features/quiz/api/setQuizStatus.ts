@@ -2,7 +2,12 @@ import { Effect } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { Quiz, type QuizId, type QuizStatus } from '@/entities/quiz';
 import { withAuthError } from '@/entities/user';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 import { InvalidQuizDataError, QuizAccessDeniedError, QuizNotFoundError } from './errors';
 
 export const updateQuizStatus = Effect.fn('updateQuizStatus')(
@@ -30,5 +35,6 @@ export const updateQuizStatus = Effect.fn('updateQuizStatus')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );
