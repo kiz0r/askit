@@ -10,7 +10,11 @@ import { Fetch, Response } from 'fx-fetch';
  */
 export function getDescriptiveErrorMessage(error: Error): string {
   if (error instanceof Response.NotOkError) {
-    return 'Something went wrong on our end. Please try again.';
+    if (error.reason === 'server-error') {
+      return 'Something went wrong on our end. Please try again.';
+    }
+
+    return 'The request could not be completed. Please try again.';
   }
 
   if (error instanceof Fetch.FetchError || error instanceof Fetch.NotAllowedError) {
