@@ -5,7 +5,7 @@ import { Fetch } from 'fx-fetch';
 import * as React from 'react';
 import { Quiz, QuizId, type QuizStatus } from '@/entities/quiz';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { editQuiz } from './api/editQuiz';
@@ -99,7 +99,7 @@ export const EditQuizForm = (props: Props) => {
       editQuizProgram(props.quizId, input).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: () => {
       Toast.success({ title: 'Quiz edited successfully' });
@@ -115,7 +115,7 @@ export const EditQuizForm = (props: Props) => {
       updateQuizStatusProgram(props.quizId, status).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: (_quiz, status) => {
       Toast.success({ title: status === 'published' ? 'Quiz published' : 'Quiz moved to draft' });

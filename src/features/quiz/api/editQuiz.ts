@@ -2,7 +2,12 @@ import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { Quiz, type QuizId } from '@/entities/quiz';
 import { withAuthError } from '@/entities/user';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 import { type QuizFormInput, QuizFormInputSchema } from '../QuizFormInput';
 import {
   InvalidQuizDataError,
@@ -39,5 +44,6 @@ export const editQuiz = Effect.fn('editQuiz')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

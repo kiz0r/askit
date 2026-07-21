@@ -6,7 +6,7 @@ import * as React from 'react';
 import { AuthState, authStateAtom, SessionExpiredError } from '@/entities/user';
 import { getUser } from '@/features/user';
 import { isUserErrorRecoverable } from '@/features/user/api/isUserErrorRecoverable';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 
@@ -45,7 +45,7 @@ export const UserProvider = () => {
     refetchOnWindowFocus: true,
     retry: false,
     queryFn: ({ signal }) =>
-      Effect.runPromise(
+      runProgram(
         program.pipe(Effect.provide(applicationLayer), Effect.ensureRequirementsType<never>()),
         {
           signal,
@@ -54,12 +54,18 @@ export const UserProvider = () => {
   });
 
   React.useEffect(() => {
-    if (query.data === undefined) {
+    if (query.data !== undefined) {
+      setAuthState(query.data);
       return;
     }
 
-    setAuthState(query.data);
-  }, [query.data, setAuthState]);
+    // A failed profile probe (e.g. an expired session on load or on refetch) means
+    // the user is not authenticated. Setting the state lets the route guard redirect
+    // to login, which the query-cache listener cannot do while it is unmounted.
+    if (query.isError) {
+      setAuthState(AuthState.unauthenticated());
+    }
+  }, [query.data, query.isError, setAuthState]);
 
   return null;
 };

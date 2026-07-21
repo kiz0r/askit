@@ -9,7 +9,7 @@ import { type Quiz, type QuizId, quizzesAtom } from '@/entities/quiz';
 import { SessionExpiredError, userAtom } from '@/entities/user';
 import { importQuiz, QuizList, useQuizzesQuery } from '@/features/quiz';
 import { isQuizErrorRecoverable } from '@/features/quiz/api/isQuizErrorRecoverable';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { Button } from '@/shared/ui';
@@ -92,7 +92,7 @@ const QuizzesPage = () => {
       importQuizProgram(data).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: (result) => {
       Toast.success({ title: 'Quiz imported', description: result.title });

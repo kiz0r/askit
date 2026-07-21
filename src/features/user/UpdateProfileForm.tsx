@@ -4,7 +4,7 @@ import { Fetch } from 'fx-fetch';
 import { useAtomValue } from 'jotai';
 import * as React from 'react';
 import { SessionExpiredError, userAtom } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { Button, Field, FieldLabel, Input } from '@/shared/ui';
@@ -61,7 +61,7 @@ export const UpdateProfileForm = (props: Props) => {
       program(username).pipe(
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({

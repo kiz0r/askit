@@ -2,7 +2,7 @@ import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { type QuizId, QuizIdSchema } from '@/entities/quiz';
 import { withAuthError } from '@/entities/user';
-import { AskitServerUrl, handleContractErrors } from '@/shared/api';
+import { AskitServerUrl, handleContractErrors, withValidationError } from '@/shared/api';
 import { QuizStats } from './getQuizStats';
 
 const BulkStatsOut = Schema.Struct({
@@ -32,5 +32,6 @@ export const getBulkQuizStats = Effect.fn('getBulkQuizStats')(
     return result.items;
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

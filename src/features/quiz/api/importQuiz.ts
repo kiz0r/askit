@@ -2,7 +2,12 @@ import { Effect } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { Quiz } from '@/entities/quiz';
 import { withAuthError } from '@/entities/user';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 import { InvalidQuizDataError } from './errors';
 
 export const importQuiz = Effect.fn('importQuiz')(
@@ -23,5 +28,6 @@ export const importQuiz = Effect.fn('importQuiz')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

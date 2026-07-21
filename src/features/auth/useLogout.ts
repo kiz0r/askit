@@ -4,6 +4,7 @@ import { Effect } from 'effect';
 import { useSetAtom } from 'jotai';
 import { isQuizzesLoadingAtom, quizzesAtom } from '@/entities/quiz';
 import { AuthState, authStateAtom } from '@/entities/user';
+import { runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { logoutUser } from './api/logoutUser';
 
@@ -23,7 +24,7 @@ export const useLogout = () => {
         Effect.provide(applicationLayer),
         Effect.ensureRequirementsType<never>(),
         Effect.ensureErrorType<never>(),
-        Effect.runPromise
+        runProgram
       ),
     onSettled: () => {
       // Server data is scoped per user but cached under user-agnostic query

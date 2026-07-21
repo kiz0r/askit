@@ -3,7 +3,7 @@ import { Effect, Schedule } from 'effect';
 import { Fetch } from 'fx-fetch';
 import type { QuizId } from '@/entities/quiz';
 import { SessionExpiredError } from '@/entities/user';
-import { getDescriptiveErrorMessage } from '@/shared/api';
+import { getDescriptiveErrorMessage, runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import { getQuiz } from './api/getQuiz';
@@ -43,7 +43,7 @@ export const useQuizQuery = (quizId: QuizId) => {
     queryFn: ({ signal, queryKey }) => {
       const [_key, quizId] = queryKey;
 
-      return Effect.runPromise(
+      return runProgram(
         program(quizId).pipe(
           Effect.provide(applicationLayer),
           Effect.ensureRequirementsType<never>()

@@ -15,6 +15,7 @@ import {
   useQuizzesQuery,
 } from '@/features/quiz';
 import { getGameHistory } from '@/features/user';
+import { runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import {
   Badge,
@@ -87,7 +88,7 @@ const StatsPage = () => {
   const activityQuery = useQuery({
     queryKey: ['game-history', 'host', 'activity-chart'] as const,
     queryFn: ({ signal }) =>
-      Effect.runPromise(
+      runProgram(
         getGameHistory({ limit: ACTIVITY_HISTORY_LIMIT, offset: 0, role: 'host' }).pipe(
           Effect.provide(applicationLayer)
         ),

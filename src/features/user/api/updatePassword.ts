@@ -2,7 +2,12 @@ import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
 import { withAuthError } from '@/entities/user';
 import { InvalidCredentialsError } from '@/features/auth';
-import { AskitServerUrl, handleContractErrors, withStructuredError } from '@/shared/api';
+import {
+  AskitServerUrl,
+  handleContractErrors,
+  withStructuredError,
+  withValidationError,
+} from '@/shared/api';
 import { PasswordSchema } from '@/shared/schema';
 
 export const UpdatePasswordInputSchema = Schema.Struct({
@@ -37,5 +42,6 @@ export const updatePassword = Effect.fn('updatePassword')(
     );
   },
   withAuthError,
+  withValidationError,
   handleContractErrors
 );

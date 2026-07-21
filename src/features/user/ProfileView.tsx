@@ -6,6 +6,7 @@ import { KeyRoundIcon, PencilIcon } from 'lucide-react';
 import * as React from 'react';
 import { isQuizzesLoadingAtom, quizzesAtom } from '@/entities/quiz';
 import { AuthState, authStateAtom, userAtom } from '@/entities/user';
+import { runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
 import { Toast } from '@/shared/toasts';
 import {
@@ -48,7 +49,7 @@ export const ProfileView = () => {
 
   const deactivate = useMutation({
     mutationKey: ['deactivate-account'] as const,
-    mutationFn: () => deactivateAccount().pipe(Effect.provide(applicationLayer), Effect.runPromise),
+    mutationFn: () => deactivateAccount().pipe(Effect.provide(applicationLayer), runProgram),
     onSuccess: () => {
       // The account is now inactive and its cookies are cleared, so wipe the
       // per-user cache the same way logout does before redirecting.
