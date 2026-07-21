@@ -7,5 +7,5 @@
 
 ## Author
 
-Kyrylo Khomenko  
+Kyrylo Khomenko
 [GitHub](https://github.com/kiz0r) • [LinkedIn](https://www.linkedin.com/in/khomenkokyrylo/)
