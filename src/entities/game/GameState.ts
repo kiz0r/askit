@@ -37,6 +37,7 @@ export type GameState = {
   readonly answerResult: WsAnswerResult | null; // Immediate feedback after answering
   readonly questionEnded: WsQuestionEnded | null; // After question ends
   readonly finalLeaderboard: readonly WsLeaderboardEntry[];
+  readonly publicResults: boolean; // Whether the final leaderboard is shown to every player
   readonly duration: Duration.Duration;
   readonly countdownDuration: Duration.Duration;
   readonly errorCode: string | null;
@@ -61,6 +62,7 @@ export const initialGameState = {
   answerResult: null,
   questionEnded: null,
   finalLeaderboard: [],
+  publicResults: true,
   duration: Duration.zero,
   countdownDuration: Duration.zero,
   errorCode: null,

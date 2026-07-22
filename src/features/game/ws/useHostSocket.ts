@@ -23,6 +23,15 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
         totalQuestions: message.payload.totalQuestions,
         currentQuestionIndex: message.payload.currentQuestionIndex,
         players: message.payload.players,
+        currentQuestion: message.payload.currentQuestion ?? null,
+        answeredPlayerIds: message.payload.hostAnswerDetails.map((detail) => detail.playerId),
+        hostAnswerDetails: message.payload.hostAnswerDetails.map((detail) => ({
+          playerId: detail.playerId,
+          nickname: detail.nickname,
+          isCorrect: detail.isCorrect,
+          totalScore: detail.totalScore,
+        })),
+        questionEnded: message.payload.questionEnded ?? null,
       };
 
     case 'player_joined':
@@ -97,6 +106,7 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
         ...prevState,
         status: 'finished',
         finalLeaderboard: message.payload.finalLeaderboard,
+        publicResults: message.payload.publicResults,
         duration: message.payload.durationMs,
       };
 

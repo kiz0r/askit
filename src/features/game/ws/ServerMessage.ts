@@ -28,6 +28,10 @@ const RoomStatePayload = Schema.Struct({
   totalQuestions: Schema.Number,
   currentQuestionIndex: Schema.Number,
   currentQuestion: Schema.optionalWith(WsQuestionSchema, { nullable: true }),
+  hostAnswerDetails: Schema.optionalWith(Schema.Array(WsHostAnswerUpdateSchema), {
+    default: () => [],
+  }),
+  questionEnded: Schema.optionalWith(WsQuestionEndedSchema, { nullable: true }),
 });
 
 const PlayerJoinedPayload = Schema.Struct({
@@ -48,6 +52,7 @@ const GameFinishedPayload = Schema.Struct({
   finalLeaderboard: Schema.Array(WsLeaderboardEntrySchema),
   totalQuestions: Schema.Number,
   durationMs: Schema.DurationFromMillis,
+  publicResults: Schema.optionalWith(Schema.Boolean, { default: () => true }),
 });
 
 const ErrorPayload = Schema.Struct({
