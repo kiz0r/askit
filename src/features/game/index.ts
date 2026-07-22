@@ -1,5 +1,7 @@
 export { CountdownView } from './CountdownView';
 export { FinalResults } from './FinalResults';
+export { GameConnectingView } from './GameConnectingView';
+export { GameErrorView } from './GameErrorView';
 export { GameSetupForm } from './GameSetupForm';
 export { HostLobby } from './HostLobby';
 export { HostQuestionView } from './HostQuestionView';
