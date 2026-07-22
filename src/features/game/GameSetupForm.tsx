@@ -85,6 +85,7 @@ type FormState = {
   readonly randomizeQuestions: boolean;
   readonly randomizeAnswers: boolean;
   readonly showImmediateFeedback: boolean;
+  readonly publicResults: boolean;
 };
 
 export const GameSetupForm = (props: Props) => {
@@ -95,6 +96,7 @@ export const GameSetupForm = (props: Props) => {
     randomizeQuestions: false,
     randomizeAnswers: false,
     showImmediateFeedback: true,
+    publicResults: true,
   }));
 
   const startGame = useMutation({
@@ -104,6 +106,7 @@ export const GameSetupForm = (props: Props) => {
         randomizeQuestions: formState.randomizeQuestions,
         randomizeAnswers: formState.randomizeAnswers,
         showImmediateFeedback: formState.showImmediateFeedback,
+        publicResults: formState.publicResults,
       };
 
       return createRoomProgram(input).pipe(Effect.provide(applicationLayer), runProgram);
@@ -154,6 +157,16 @@ export const GameSetupForm = (props: Props) => {
             checked={formState.showImmediateFeedback}
             onCheckedChange={(checked) =>
               setFormState((prev) => ({ ...prev, showImmediateFeedback: checked }))
+            }
+          />
+
+          <SettingRow
+            id='public-results'
+            label='Public Results'
+            description='Show the full final leaderboard to every player; when off, each player sees only their own result'
+            checked={formState.publicResults}
+            onCheckedChange={(checked) =>
+              setFormState((prev) => ({ ...prev, publicResults: checked }))
             }
           />
         </CardContent>

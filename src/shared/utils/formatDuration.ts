@@ -13,6 +13,10 @@ export function formatDuration(duration: Duration.Duration): string {
     return `${seconds}s`;
   }
 
+  if (seconds === 0) {
+    return `${minutes}m`;
+  }
+
   return `${minutes}m ${seconds}s`;
 }
 

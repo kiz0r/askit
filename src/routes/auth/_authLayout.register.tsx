@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { RegisterForm } from '@/features/auth';
+import { RegisterPage } from '@/pages/RegisterPage';
 
 export const Route = createFileRoute('/auth/_authLayout/register')({
   head: () => ({
     meta: [{ title: 'AskIt ⋅ Sign up' }],
   }),
-  component: RegisterForm,
+  component: RegisterPage,
 });

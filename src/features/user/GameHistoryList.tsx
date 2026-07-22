@@ -1,23 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { DateTime, Duration, Effect } from 'effect';
 import { TrophyIcon } from 'lucide-react';
-import * as React from 'react';
 import { runProgram } from '@/shared/api';
 import { applicationLayer } from '@/shared/settings';
-import {
-  Button,
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Skeleton,
-} from '@/shared/ui';
+import { Button, Empty, EmptyHeader, EmptyMedia, EmptyTitle, Skeleton } from '@/shared/ui';
 import { cn, formatDate, formatDuration, generateArrayFromLength } from '@/shared/utils';
 import { type GameHistoryItem, getGameHistory } from './api/getGameHistory';
 
@@ -45,9 +31,9 @@ function RankBadge(props: { readonly rank: number }) {
   );
 }
 
-type RoleFilter = 'all' | 'host' | 'player';
+export type RoleFilter = 'all' | 'host' | 'player';
 
-const roleFilterOptions = [
+export const roleFilterOptions = [
   { value: 'all', label: 'All games' },
   { value: 'host', label: 'Hosted' },
   { value: 'player', label: 'Played' },
@@ -101,7 +87,7 @@ const HistoryRow = (props: RowProps) => {
         {formatDate(historyItem.startedAt, { excludeSeconds: true })}
       </span>
 
-      <span className='text-sm text-muted-foreground'>
+      <span className='text-sm text-muted-foreground text-right tabular-nums'>
         {duration ?? <span className='text-muted-foreground'>—</span>}
       </span>
 
@@ -126,16 +112,18 @@ const HistoryRow = (props: RowProps) => {
   );
 };
 
-export const GameHistoryList = () => {
-  const [roleFilter, setRoleFilter] = React.useState<RoleFilter>(() => 'all');
+type Props = {
+  readonly role: RoleFilter;
+};
 
+export const GameHistoryList = (props: Props) => {
   const query = useInfiniteQuery({
-    queryKey: ['game-history', roleFilter] as const,
+    queryKey: ['game-history', props.role] as const,
     queryFn: ({ pageParam, signal }) => {
       const program = getGameHistory({
         limit: PAGE_SIZE,
         offset: pageParam,
-        role: roleFilter,
+        role: props.role,
       }).pipe(Effect.provide(applicationLayer));
 
       return runProgram(program, { signal });
@@ -152,23 +140,6 @@ export const GameHistoryList = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex justify-end'>
-        <Select value={roleFilter} onValueChange={(value: RoleFilter) => setRoleFilter(value)}>
-          <SelectTrigger className='w-40'>
-            <SelectValue placeholder='Filter' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {roleFilterOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
       {query.isLoading ? (
         <div className='rounded-xl border overflow-clip'>
           <div className='flex flex-col'>
@@ -206,7 +177,7 @@ export const GameHistoryList = () => {
               <span>Quiz Name</span>
               <span>Role</span>
               <span>Date</span>
-              <span>Duration</span>
+              <span className='text-right'>Duration</span>
               <span className='text-right'>Players</span>
               <span className='text-right'>Score</span>
               <span className='text-right'>Rank</span>

@@ -29,7 +29,7 @@ export const AppHeader = () => {
           <Logo />
           <nav className='flex items-center gap-1'>
             <NavLink to='/quizzes'>My Quizzes</NavLink>
-            <NavLink to='/stats'>Analytics</NavLink>
+            <NavLink to='/analytics'>Analytics</NavLink>
             <NavLink to='/history'>History</NavLink>
           </nav>
         </div>
