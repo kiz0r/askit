@@ -1,25 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
+import { HomePage } from '@/pages/HomePage';
 
 export const Route = createFileRoute('/')({
   head: () => ({
     meta: [{ title: 'AskIt' }],
   }),
-  component: () => (
-    <div>
-      <h1>Ask IT! Home Page</h1>
-      <br />
-      <br />
-      <ul>
-        <li>
-          <Link to='/auth/login'>Login</Link>
-        </li>
-        <li>
-          <Link to='/auth/register'>Register</Link>
-        </li>
-        <li>
-          <Link to='/quizzes'>Dashboard</Link>
-        </li>
-      </ul>
-    </div>
-  ),
+  component: HomePage,
 });
