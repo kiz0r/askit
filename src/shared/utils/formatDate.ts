@@ -15,45 +15,17 @@ function isDayBefore(dateTime: DateTime.DateTime, now: DateTime.DateTime): boole
   return Equal.equals(dateStartOfDay, dayBeforeNowStartOfDay);
 }
 
-const userLocale =
-  typeof globalThis.navigator === 'undefined' ? 'en-US' : globalThis.navigator.language;
+function pad2(value: number): string {
+  return value < 10 ? `0${value}` : String(value);
+}
 
-const FormatterWithSeconds = new Intl.DateTimeFormat(userLocale, {
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit',
-  second: '2-digit',
-});
-
-const FormatterWithoutSeconds = new Intl.DateTimeFormat(userLocale, {
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit',
-});
-
-const FormatterRelative = new Intl.DateTimeFormat(userLocale, {
-  hour: 'numeric',
-  minute: '2-digit',
-  second: '2-digit',
-});
-
-function getFormatterByOptions(
-  relativeDate: boolean,
-  excludeSeconds: boolean
-): Intl.DateTimeFormat {
-  if (relativeDate) {
-    return FormatterRelative;
-  }
-
+function formatTime(date: Date, excludeSeconds: boolean): string {
+  const time = `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
   if (excludeSeconds) {
-    return FormatterWithoutSeconds;
+    return time;
   }
 
-  return FormatterWithSeconds;
+  return `${time}:${pad2(date.getSeconds())}`;
 }
 
 type Options = {
@@ -62,15 +34,16 @@ type Options = {
 };
 
 /**
- * Utility function to format a date to a human-readable string.
+ * Utility function to format a date to a human-readable string in the day-first,
+ * 24-hour European style.
  *
  * @example
  * ```ts
  * const now = new Date();
  *
- * formatDate(now); // => "Today, 12:00:00 PM"
- * formatDate(now, { relativeDate: false }); // => "6/1/2024, 12:00:00 PM"
- * formatDate(now, { excludeSeconds: true }); // => "Today, 12:00 PM"
+ * formatDate(now); // => "Today, 12:00:00"
+ * formatDate(now, { excludeSeconds: true }); // => "Today, 12:00"
+ * formatDate(lastWeek, { excludeSeconds: true }); // => "16.6.2026 10:55"
  * ```
  */
 export function formatDate(input: DateTime.DateTime.Input | null, options?: Options): string {
@@ -83,32 +56,25 @@ export function formatDate(input: DateTime.DateTime.Input | null, options?: Opti
     return '—';
   }
 
-  const date = dateOption.value;
-  const now = DateTime.unsafeNow();
-
+  const dateTime = dateOption.value;
+  const date = DateTime.toDate(dateTime);
   const excludeSeconds = options?.excludeSeconds ?? false;
   const relativeDate = options?.relativeDate ?? true;
 
-  if (!relativeDate) {
-    // We do not want to show "Today" or "Yesterday", so we exclude them from the formatter and just show the date and time.
-    const formatter = getFormatterByOptions(false, excludeSeconds);
-    return DateTime.formatIntl(date, formatter);
+  const time = formatTime(date, excludeSeconds);
+
+  if (relativeDate) {
+    const now = DateTime.unsafeNow();
+
+    if (isTheSameDate(dateTime, now)) {
+      return `Today, ${time}`;
+    }
+
+    if (isDayBefore(dateTime, now)) {
+      return `Yesterday, ${time}`;
+    }
   }
 
-  const isSameDate = isTheSameDate(date, now);
-  const isDayBeforeDate = isDayBefore(date, now);
-
-  const formatter = getFormatterByOptions(relativeDate, excludeSeconds);
-
-  const dateTime = DateTime.formatIntl(date, formatter);
-
-  if (isSameDate) {
-    return `Today, ${dateTime}`;
-  }
-
-  if (isDayBeforeDate) {
-    return `Yesterday, ${dateTime}`;
-  }
-
-  return dateTime;
+  const day = `${pad2(date.getDate())}.${pad2(date.getMonth() + 1)}.${date.getFullYear()}`;
+  return `${day} ${time}`;
 }
