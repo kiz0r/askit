@@ -24,6 +24,7 @@ function applyMessage(prevState: GameState, message: ServerMessage): GameState {
         currentQuestionIndex: message.payload.currentQuestionIndex,
         players: message.payload.players,
         currentQuestion: message.payload.currentQuestion ?? null,
+        questionEnded: message.payload.questionEnded ?? null,
       };
     }
 
@@ -85,6 +86,7 @@ function applyMessage(prevState: GameState, message: ServerMessage): GameState {
         ...prevState,
         status: 'finished',
         finalLeaderboard: message.payload.finalLeaderboard,
+        publicResults: message.payload.publicResults,
         duration: message.payload.durationMs,
       };
     }

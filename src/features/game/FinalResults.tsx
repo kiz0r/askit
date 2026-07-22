@@ -9,6 +9,8 @@ type Props = {
   readonly sessionPlayerId: PlayerId | null;
   readonly duration: Duration.Duration;
   readonly totalQuestions: number;
+  readonly totalPlayers: number;
+  readonly publicResults: boolean;
 };
 
 function getGrade(percentage: number) {
@@ -93,6 +95,15 @@ export const FinalResults = (props: Props) => {
   const percentage = maxScore > 0 ? Math.round((playerScore / maxScore) * 100) : 0;
   const grade = getGrade(percentage);
 
+  // The host always sees the full ranking. When results are private, a player
+  // sees only their own entry rather than the other participants' scores.
+  const showFullBoard = isHost || props.publicResults;
+  const visibleEntries = showFullBoard
+    ? props.leaderboardEntries
+    : playerEntry
+      ? [playerEntry]
+      : [];
+
   return (
     <div className='flex flex-col grow items-center justify-center gap-6 p-6 bg-zinc-950 text-zinc-50'>
       <div className='flex flex-col items-center gap-3 text-center'>
@@ -121,12 +132,12 @@ export const FinalResults = (props: Props) => {
         )}
 
         <p className='text-sm text-white/40'>
-          {formatDuration(props.duration)} · {props.leaderboardEntries.length} players
+          {formatDuration(props.duration)} · {props.totalPlayers} players
         </p>
       </div>
 
       <div className='w-full max-w-sm flex flex-col gap-1.5 rounded-2xl p-4 bg-white/3 border border-white/8'>
-        {props.leaderboardEntries.map((player) => {
+        {visibleEntries.map((player) => {
           const isMe = player.playerId === props.sessionPlayerId;
 
           return (

@@ -26,6 +26,7 @@ const CreateRoomInputSchema = Schema.Struct({
   randomizeQuestions: Schema.Boolean.pipe(Schema.optional),
   randomizeAnswers: Schema.Boolean.pipe(Schema.optional),
   showImmediateFeedback: Schema.Boolean.pipe(Schema.optional),
+  publicResults: Schema.Boolean.pipe(Schema.optional),
 });
 
 export type CreateRoomInput = {
@@ -33,6 +34,7 @@ export type CreateRoomInput = {
   readonly randomizeQuestions?: boolean;
   readonly randomizeAnswers?: boolean;
   readonly showImmediateFeedback?: boolean;
+  readonly publicResults?: boolean;
 };
 
 const encodeBody = Schema.parseJson(CreateRoomInputSchema).pipe(Schema.encode);
