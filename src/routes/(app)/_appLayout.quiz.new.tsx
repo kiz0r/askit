@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { CreateQuizForm } from '@/features/quiz';
+import { NewQuizPage } from '@/pages/NewQuizPage';
 
 export const Route = createFileRoute('/(app)/_appLayout/quiz/new')({
   head: () => ({
@@ -8,5 +8,5 @@ export const Route = createFileRoute('/(app)/_appLayout/quiz/new')({
       { name: 'description', content: 'Create a new quiz on the AskIt dashboard' },
     ],
   }),
-  component: CreateQuizForm,
+  component: NewQuizPage,
 });

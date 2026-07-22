@@ -34,11 +34,11 @@ const GameLayout = () => {
     : null;
 
   return (
-    <main className='min-h-screen flex flex-col bg-zinc-950 text-white'>
+    <main className='dark min-h-screen flex flex-col bg-zinc-950 text-white'>
       <header className='sticky top-0 z-40 flex items-center gap-3 px-6 py-4 border-b border-white/6 shrink-0 bg-zinc-950'>
         <Logo />
 
-        {showProgress && question ? (
+        {showProgress && question !== null ? (
           <>
             <div className='flex flex-1 gap-1'>
               {generateArrayFromLength(question.totalQuestions, (_, index) => (
