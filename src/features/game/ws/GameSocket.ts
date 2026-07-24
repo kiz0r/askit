@@ -1,146 +1,133 @@
-import { Data, Effect, Either, Queue, Schedule, Schema, Stream } from 'effect';
+import { Socket } from '@effect/platform';
+import { Effect, Either, Queue, Ref, Schedule, Schema } from 'effect';
 import { AskitWebSocketUrl } from '@/shared/api';
 import { Toast } from '@/shared/toasts';
 import type { ClientMessage } from './ClientMessage';
 import { type ServerMessage, ServerMessageSchema } from './ServerMessage';
 
-type SendFn = (msg: ClientMessage) => void;
-
-class WsConnectError extends Data.TaggedError('WsConnectError')<{ readonly reason: string }> {}
-
-const eitherMessageDecoder = Schema.decodeUnknownEither(ServerMessageSchema);
-
-const parseIncomingMessage = (raw: unknown): ServerMessage | null => {
-  const result = eitherMessageDecoder(raw);
-  if (!Either.isRight(result)) {
-    return null;
-  }
-
-  return result.right;
-};
-
 /**
- * Opens one WebSocket connection to `url`.
- *
- * Returns a Stream<ServerMessage> that ends when the socket closes (clean end, no error).
- * Fails with WsConnectError if the socket can't connect.
- *
- * `sendRef.fn` is updated to the live `ws.send` on open and reset to no-op on close.
+ * Called for every decoded server message. The hook supplies this to fold the
+ * message into the game state and raise any user-facing toasts.
  */
-const openOnce = (
-  url: string,
-  sendRef: {
-    /* mutable */ fn: SendFn;
-  }
-): Effect.Effect<Stream.Stream<ServerMessage>, WsConnectError> =>
-  Effect.gen(function* () {
-    const queue = yield* Queue.unbounded<ServerMessage>();
+type MessageHandler = (message: ServerMessage) => Effect.Effect<void>;
 
-    let onClose: () => void;
-    const closedPromise = new Promise<void>((resolve) => {
-      onClose = resolve;
-    });
+// Parses the JSON wire string and validates it against the message union in one
+// step; a frame that matches no known shape decodes to a Left and is ignored.
+const decodeFrame = Schema.parseJson(ServerMessageSchema).pipe(Schema.decodeUnknownEither);
 
-    yield* Effect.async<void, WsConnectError>((resume) => {
-      const webSocket = new WebSocket(url);
+const CONNECTION_ISSUE_TOAST_THRESHOLD = 3;
 
-      webSocket.onopen = () => {
-        sendRef.fn = (msg) => webSocket.send(JSON.stringify(msg));
-        resume(Effect.void);
-      };
-
-      webSocket.onerror = () =>
-        resume(Effect.fail(new WsConnectError({ reason: 'connection_failed' })));
-
-      webSocket.onmessage = (event: MessageEvent) => {
-        let raw: unknown;
-        try {
-          raw = JSON.parse(String(event.data));
-        } catch {
-          return;
-        }
-        const msg = parseIncomingMessage(raw);
-        if (msg !== null) {
-          Queue.unsafeOffer(queue, msg);
-        }
-      };
-
-      webSocket.onclose = () => {
-        sendRef.fn = () => {};
-        onClose();
-      };
-
-      return Effect.sync(() => webSocket.close());
-    });
-
-    const stream = Stream.fromQueue(queue).pipe(
-      Stream.interruptWhen(Effect.promise(() => closedPromise))
-    );
-
-    return stream;
-  });
-
+// Reconnect backoff after a connection failure: exponential from 300ms, capped
+// at 5s (the union takes the smaller delay once the exponential grows past it),
+// with jitter to spread many clients' retries.
 const socketConnectionRetry = Schedule.exponential('300 millis', 2).pipe(
-  Schedule.andThen(Schedule.spaced('5 seconds')),
+  Schedule.union(Schedule.spaced('5 seconds')),
   Schedule.jittered
 );
 
 /**
- * Core reconnecting socket factory. URL-agnostic.
- *
- * Strategy:
- *   - Connection failure (onerror) → exponential retry capped at 5 s intervals
- *   - Clean disconnect (onclose) → `Stream.repeat` reconnects after 1 s
+ * Decodes one inbound frame and hands the message to `onMessage`. Frames that
+ * match no known shape are logged and skipped so a stray frame never tears the
+ * connection down. `runRaw` delivers text frames as strings, which the JSON
+ * schema consumes directly.
  */
-const CONNECTION_ISSUE_TOAST_THRESHOLD = 3;
+function handleFrame(onMessage: MessageHandler) {
+  return (data: string | Uint8Array) =>
+    Effect.gen(function* () {
+      const decoded = decodeFrame(data);
+      if (Either.isLeft(decoded)) {
+        yield* Effect.logDebug('Ignoring unrecognized game frame.', decoded.left.message);
+        return;
+      }
 
-const makeSocket = (url: string) =>
-  Effect.gen(function* () {
-    const sendRef: { readonly fn: SendFn } = { fn: () => {} };
-    let failedAttempts = 0;
+      yield* onMessage(decoded.right);
+    });
+}
 
-    const stream = openOnce(url, sendRef).pipe(
+/**
+ * Opens one connection to `url`, drains the outbound mailbox into the socket for
+ * the lifetime of the connection, and runs until the socket closes (success) or
+ * errors (failure). `onOpen` clears the failure counter once the socket is live.
+ */
+function connectOnce(
+  url: string,
+  outbound: Queue.Dequeue<ClientMessage>,
+  onMessage: MessageHandler,
+  failedAttempts: Ref.Ref<number>
+) {
+  return Effect.gen(function* () {
+    const socket = yield* Socket.makeWebSocket(url);
+
+    yield* Effect.scoped(
+      Effect.gen(function* () {
+        const write = yield* socket.writer;
+
+        // Pump: take each queued client message and write it to the live socket.
+        // A message enqueued while disconnected simply waits for the next
+        // connection to drain it rather than being lost.
+        yield* Effect.forkScoped(
+          Effect.forever(
+            Queue.take(outbound).pipe(
+              Effect.flatMap((message) => write(JSON.stringify(message)).pipe(Effect.ignore))
+            )
+          )
+        );
+
+        yield* socket.runRaw(handleFrame(onMessage), {
+          onOpen: Ref.set(failedAttempts, 0),
+        });
+      })
+    );
+  });
+}
+
+/**
+ * Long-running connection loop for `url`: retries connection failures with
+ * backoff (raising a toast after repeated failures) and re-opens after a clean
+ * close, so the game recovers from the server's `room_state` snapshot. Never
+ * completes under normal operation.
+ */
+function listen(url: string, outbound: Queue.Dequeue<ClientMessage>, onMessage: MessageHandler) {
+  return Effect.gen(function* () {
+    const failedAttempts = yield* Ref.make(0);
+
+    yield* connectOnce(url, outbound, onMessage, failedAttempts).pipe(
       Effect.tapError(() =>
-        Effect.sync(() => {
-          failedAttempts += 1;
-          if (failedAttempts === CONNECTION_ISSUE_TOAST_THRESHOLD) {
-            Toast.danger({
-              title: 'Connection issue',
-              description: 'Having trouble connecting. Retrying...',
-            });
+        Effect.gen(function* () {
+          const attempts = yield* Ref.updateAndGet(failedAttempts, (n) => n + 1);
+          if (attempts === CONNECTION_ISSUE_TOAST_THRESHOLD) {
+            yield* Effect.sync(() =>
+              Toast.danger({
+                title: 'Connection issue',
+                description: 'Having trouble connecting. Retrying...',
+              })
+            );
           }
         })
       ),
       Effect.retry(socketConnectionRetry),
-      Effect.tap(() =>
-        Effect.sync(() => {
-          failedAttempts = 0;
-        })
-      ),
-      Stream.fromEffect,
-      Stream.flatten(),
-      Stream.retry(Schedule.spaced('1 second')),
-      Stream.repeat(Schedule.spaced('1 second'))
+      // A clean close completes `connectOnce` normally; re-open after a short pause.
+      Effect.repeat(Schedule.spaced('1 second')),
+      Effect.asVoid
     );
+  }).pipe(Effect.provide(Socket.layerWebSocketConstructorGlobal));
+}
 
-    const send: SendFn = (msg) => sendRef.fn(msg);
-
-    return {
-      stream,
-      send,
-    } as const;
-  });
-
-export const makeGameSocket = Effect.fn('makeGameSocket')(function* (roomCode: string) {
+export const makeGameSocket = Effect.fn('makeGameSocket')(function* (
+  roomCode: string,
+  outbound: Queue.Dequeue<ClientMessage>,
+  onMessage: MessageHandler
+) {
   const webSocketUrl = yield* AskitWebSocketUrl;
-  const url = `${webSocketUrl}/ws/game/${roomCode}`;
-
-  return yield* makeSocket(url);
+  return yield* listen(`${webSocketUrl}/ws/game/${roomCode}`, outbound, onMessage);
 });
 
-export const makeHostSocket = Effect.fn('makeHostSocket')(function* (roomCode: string) {
+export const makeHostSocket = Effect.fn('makeHostSocket')(function* (
+  roomCode: string,
+  outbound: Queue.Dequeue<ClientMessage>,
+  onMessage: MessageHandler
+) {
   const webSocketUrl = yield* AskitWebSocketUrl;
   const url = `${webSocketUrl}/ws/game/${roomCode}/host`;
-
-  return yield* makeSocket(url);
+  return yield* listen(url, outbound, onMessage);
 });

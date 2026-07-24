@@ -1,4 +1,4 @@
-import { Effect, Fiber, Stream } from 'effect';
+import { Effect, Fiber, Queue } from 'effect';
 import { useSetAtom } from 'jotai';
 import * as React from 'react';
 import { gameStateAtom } from '@/entities/game';
@@ -67,7 +67,10 @@ function applyMessage(prevState: GameState, message: ServerMessage): GameState {
     }
 
     case 'answer_result': {
-      return { ...prevState, answerResult: message.payload };
+      return {
+        ...prevState,
+        answerResult: message.payload,
+      };
     }
 
     case 'player_answered': {
@@ -116,54 +119,55 @@ export function useGameSocket(roomCode: string): {
   readonly send: (msg: ClientMessage) => void;
 } {
   const setGameState = useSetAtom(gameStateAtom);
-  const sendRef = React.useRef<(msg: ClientMessage) => void>(() => {});
+  const outbound = React.useMemo(() => Effect.runSync(Queue.unbounded<ClientMessage>()), []);
 
   React.useEffect(() => {
-    const program = Effect.gen(function* () {
-      const gameSocket = yield* makeGameSocket(roomCode);
-      sendRef.current = gameSocket.send;
+    const onMessage = (msg: ServerMessage) =>
+      Effect.sync(() => {
+        if (msg.type === 'error' && msg.payload.code === 'ANSWER_ERROR') {
+          Toast.danger({
+            title: 'Answer failed',
+            description: 'Your answer could not be submitted. Try again.',
+          });
+          return;
+        }
 
-      yield* gameSocket.stream.pipe(
-        Stream.runForEach((msg) =>
-          Effect.sync(() => {
-            if (msg.type === 'error' && msg.payload.code === 'ANSWER_ERROR') {
-              Toast.danger({
-                title: 'Answer failed',
-                description: 'Your answer could not be submitted. Try again.',
-              });
-              return;
-            }
+        if (msg.type === 'error' && msg.payload.code === 'ALREADY_ANSWERED') {
+          Toast.danger({
+            title: 'Answer failed',
+            description: 'You have already answered this question.',
+          });
+          return;
+        }
 
-            if (msg.type === 'error' && msg.payload.code === 'ALREADY_ANSWERED') {
-              Toast.danger({
-                title: 'Answer failed',
-                description: 'You have already answered this question.',
-              });
-              return;
-            }
+        if (msg.type === 'error' && msg.payload.code === 'QUESTION_NOT_ACTIVE') {
+          Toast.danger({
+            title: 'Answer failed',
+            description: 'This question is no longer active.',
+          });
+          return;
+        }
 
-            if (msg.type === 'error' && msg.payload.code === 'QUESTION_NOT_ACTIVE') {
-              Toast.danger({
-                title: 'Answer failed',
-                description: 'This question is no longer active.',
-              });
-              return;
-            }
+        setGameState((prev) => applyMessage(prev, msg));
+      });
 
-            setGameState((prev) => applyMessage(prev, msg));
-          })
-        )
-      );
-    }).pipe(Effect.provide(applicationLayer));
+    const program = makeGameSocket(roomCode, outbound, onMessage).pipe(
+      Effect.provide(applicationLayer)
+    );
 
     const fiber = Effect.runFork(program);
 
     return () => {
       Effect.runFork(Fiber.interrupt(fiber));
     };
-  }, [roomCode, setGameState]);
+  }, [roomCode, outbound, setGameState]);
 
-  const send = React.useCallback((msg: ClientMessage) => sendRef.current(msg), []);
+  const send = React.useCallback(
+    (msg: ClientMessage) => {
+      Queue.unsafeOffer(outbound, msg);
+    },
+    [outbound]
+  );
 
   return { send };
 }
