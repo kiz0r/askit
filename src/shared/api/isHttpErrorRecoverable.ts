@@ -11,8 +11,12 @@ export type HttpError =
   | Fetch.NotAllowedError
   | Response.NotOkError;
 
+// Transient server/infra responses worth retrying. A plain 500 is usually a
+// deterministic server bug, so it fails fast rather than being retried.
+const RETRYABLE_STATUSES = new Set<number>([429, 502, 503, 504] as const);
+
 const isNotOkErrorRecoverable = (error: Response.NotOkError): boolean =>
-  error.reason === 'server-error' || error.response.status === 429;
+  RETRYABLE_STATUSES.has(error.response.status);
 
 /**
  * Utility function to determine if a given HTTP error from the `fx-fetch` package
