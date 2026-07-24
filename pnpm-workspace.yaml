@@ -6,4 +6,5 @@ onlyBuiltDependencies:
   - '@biomejs/biome'
 
 allowBuilds:
+  msgpackr-extract: false
   msw: false
