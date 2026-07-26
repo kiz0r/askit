@@ -1,4 +1,4 @@
-import { Effect, Fiber, Stream } from 'effect';
+import { Effect, Fiber, Queue } from 'effect';
 import { useSetAtom } from 'jotai';
 import * as React from 'react';
 import { gameStateAtom } from '@/entities/game';
@@ -12,7 +12,7 @@ import type { ServerMessage } from './ServerMessage';
 
 function applyHostMessage(prevState: GameState, message: ServerMessage): GameState {
   switch (message.type) {
-    case 'room_state':
+    case 'room_state': {
       return {
         ...prevState,
         status: roomStatusToGameStatus(message.payload.status, prevState.status),
@@ -33,30 +33,34 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
         })),
         questionEnded: message.payload.questionEnded ?? null,
       };
+    }
 
-    case 'player_joined':
+    case 'player_joined': {
       return {
         ...prevState,
         players: [...prevState.players, message.payload.player],
       };
+    }
 
-    case 'player_left':
+    case 'player_left': {
       return {
         ...prevState,
         players: prevState.players.map((player) =>
           player.playerId === message.payload.playerId ? { ...player, isConnected: false } : player
         ),
       };
+    }
 
-    case 'game_starting':
+    case 'game_starting': {
       return {
         ...prevState,
         status: 'starting',
         countdownDuration: message.payload.countdownMs,
         totalQuestions: message.payload.totalQuestions,
       };
+    }
 
-    case 'question':
+    case 'question': {
       return {
         ...prevState,
         status: 'question',
@@ -67,17 +71,20 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
         answeredPlayerIds: [],
         hostAnswerDetails: [],
       };
+    }
 
-    case 'answer_result':
+    case 'answer_result': {
       return prevState; // host doesn't submit answers
+    }
 
-    case 'player_answered':
+    case 'player_answered': {
       return {
         ...prevState,
         answeredPlayerIds: [...prevState.answeredPlayerIds, message.payload.playerId],
       };
+    }
 
-    case 'host_answer_update':
+    case 'host_answer_update': {
       return {
         ...prevState,
         players: prevState.players.map((player) => {
@@ -97,11 +104,16 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
           },
         ],
       };
+    }
 
-    case 'question_ended':
-      return { ...prevState, questionEnded: message.payload };
+    case 'question_ended': {
+      return {
+        ...prevState,
+        questionEnded: message.payload,
+      };
+    }
 
-    case 'game_finished':
+    case 'game_finished': {
       return {
         ...prevState,
         status: 'finished',
@@ -109,14 +121,16 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
         publicResults: message.payload.publicResults,
         duration: message.payload.durationMs,
       };
+    }
 
-    case 'error':
+    case 'error': {
       return {
         ...prevState,
         status: 'error',
         errorCode: message.payload.code,
         errorMessage: message.payload.message,
       };
+    }
 
     default: {
       const _exhaustive: never = message;
@@ -135,36 +149,37 @@ export function useHostSocket(roomCode: string): {
   readonly send: (msg: ClientMessage) => void;
 } {
   const setGameState = useSetAtom(gameStateAtom);
-  const sendRef = React.useRef<(msg: ClientMessage) => void>(() => {});
+  const outbound = React.useMemo(() => Effect.runSync(Queue.unbounded<ClientMessage>()), []);
 
   React.useEffect(() => {
-    const program = Effect.gen(function* () {
-      const { stream, send } = yield* makeHostSocket(roomCode);
-      sendRef.current = send;
+    const onMessage = (msg: ServerMessage) =>
+      Effect.sync(() => {
+        if (msg.type === 'error') {
+          Toast.danger({
+            title: 'Game error',
+            description: msg.payload.message,
+          });
+        }
+        setGameState((prev) => applyHostMessage(prev, msg));
+      });
 
-      yield* stream.pipe(
-        Stream.runForEach((msg) =>
-          Effect.sync(() => {
-            if (msg.type === 'error') {
-              Toast.danger({
-                title: 'Game error',
-                description: msg.payload.message,
-              });
-            }
-            setGameState((prev) => applyHostMessage(prev, msg));
-          })
-        )
-      );
-    }).pipe(Effect.provide(applicationLayer));
+    const program = makeHostSocket(roomCode, outbound, onMessage).pipe(
+      Effect.provide(applicationLayer)
+    );
 
     const fiber = Effect.runFork(program);
 
     return () => {
       Effect.runFork(Fiber.interrupt(fiber));
     };
-  }, [roomCode, setGameState]);
+  }, [roomCode, outbound, setGameState]);
 
-  const send = React.useCallback((msg: ClientMessage) => sendRef.current(msg), []);
+  const send = React.useCallback(
+    (msg: ClientMessage) => {
+      Queue.unsafeOffer(outbound, msg);
+    },
+    [outbound]
+  );
 
   return { send };
 }

@@ -13,10 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as appAppLayoutRouteImport } from './routes/(app)/_appLayout'
 import { Route as gameGameLayoutRouteImport } from './routes/(game)/_gameLayout'
 import { Route as AuthAuthLayoutRouteImport } from './routes/auth/_authLayout'
+import { Route as appAppLayoutAnalyticsRouteImport } from './routes/(app)/_appLayout.analytics'
 import { Route as appAppLayoutHistoryRouteImport } from './routes/(app)/_appLayout.history'
 import { Route as appAppLayoutProfileRouteImport } from './routes/(app)/_appLayout.profile'
 import { Route as appAppLayoutQuizzesRouteImport } from './routes/(app)/_appLayout.quizzes'
-import { Route as appAppLayoutAnalyticsRouteImport } from './routes/(app)/_appLayout.analytics'
 import { Route as gameGameLayoutJoinRouteImport } from './routes/(game)/_gameLayout.join'
 import { Route as AuthAuthLayoutLoginRouteImport } from './routes/auth/_authLayout.login'
 import { Route as AuthAuthLayoutRegisterRouteImport } from './routes/auth/_authLayout.register'
@@ -44,6 +44,11 @@ const AuthAuthLayoutRoute = AuthAuthLayoutRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const appAppLayoutAnalyticsRoute = appAppLayoutAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => appAppLayoutRoute,
+} as any)
 const appAppLayoutHistoryRoute = appAppLayoutHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -57,11 +62,6 @@ const appAppLayoutProfileRoute = appAppLayoutProfileRouteImport.update({
 const appAppLayoutQuizzesRoute = appAppLayoutQuizzesRouteImport.update({
   id: '/quizzes',
   path: '/quizzes',
-  getParentRoute: () => appAppLayoutRoute,
-} as any)
-const appAppLayoutAnalyticsRoute = appAppLayoutAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
   getParentRoute: () => appAppLayoutRoute,
 } as any)
 const gameGameLayoutJoinRoute = gameGameLayoutJoinRouteImport.update({
@@ -112,10 +112,10 @@ const appAppLayoutQuizSetupQuizIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthAuthLayoutRouteWithChildren
+  '/analytics': typeof appAppLayoutAnalyticsRoute
   '/history': typeof appAppLayoutHistoryRoute
   '/profile': typeof appAppLayoutProfileRoute
   '/quizzes': typeof appAppLayoutQuizzesRoute
-  '/analytics': typeof appAppLayoutAnalyticsRoute
   '/join': typeof gameGameLayoutJoinRoute
   '/auth/login': typeof AuthAuthLayoutLoginRoute
   '/auth/register': typeof AuthAuthLayoutRegisterRoute
@@ -128,10 +128,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthAuthLayoutRouteWithChildren
+  '/analytics': typeof appAppLayoutAnalyticsRoute
   '/history': typeof appAppLayoutHistoryRoute
   '/profile': typeof appAppLayoutProfileRoute
   '/quizzes': typeof appAppLayoutQuizzesRoute
-  '/analytics': typeof appAppLayoutAnalyticsRoute
   '/join': typeof gameGameLayoutJoinRoute
   '/auth/login': typeof AuthAuthLayoutLoginRoute
   '/auth/register': typeof AuthAuthLayoutRegisterRoute
@@ -147,10 +147,10 @@ export interface FileRoutesById {
   '/(app)/_appLayout': typeof appAppLayoutRouteWithChildren
   '/(game)/_gameLayout': typeof gameGameLayoutRouteWithChildren
   '/auth/_authLayout': typeof AuthAuthLayoutRouteWithChildren
+  '/(app)/_appLayout/analytics': typeof appAppLayoutAnalyticsRoute
   '/(app)/_appLayout/history': typeof appAppLayoutHistoryRoute
   '/(app)/_appLayout/profile': typeof appAppLayoutProfileRoute
   '/(app)/_appLayout/quizzes': typeof appAppLayoutQuizzesRoute
-  '/(app)/_appLayout/analytics': typeof appAppLayoutAnalyticsRoute
   '/(game)/_gameLayout/join': typeof gameGameLayoutJoinRoute
   '/auth/_authLayout/login': typeof AuthAuthLayoutLoginRoute
   '/auth/_authLayout/register': typeof AuthAuthLayoutRegisterRoute
@@ -165,10 +165,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/analytics'
     | '/history'
     | '/profile'
     | '/quizzes'
-    | '/analytics'
     | '/join'
     | '/auth/login'
     | '/auth/register'
@@ -181,10 +181,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/analytics'
     | '/history'
     | '/profile'
     | '/quizzes'
-    | '/analytics'
     | '/join'
     | '/auth/login'
     | '/auth/register'
@@ -199,10 +199,10 @@ export interface FileRouteTypes {
     | '/(app)/_appLayout'
     | '/(game)/_gameLayout'
     | '/auth/_authLayout'
+    | '/(app)/_appLayout/analytics'
     | '/(app)/_appLayout/history'
     | '/(app)/_appLayout/profile'
     | '/(app)/_appLayout/quizzes'
-    | '/(app)/_appLayout/analytics'
     | '/(game)/_gameLayout/join'
     | '/auth/_authLayout/login'
     | '/auth/_authLayout/register'
@@ -250,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/_appLayout/analytics': {
+      id: '/(app)/_appLayout/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof appAppLayoutAnalyticsRouteImport
+      parentRoute: typeof appAppLayoutRoute
+    }
     '/(app)/_appLayout/history': {
       id: '/(app)/_appLayout/history'
       path: '/history'
@@ -269,13 +276,6 @@ declare module '@tanstack/react-router' {
       path: '/quizzes'
       fullPath: '/quizzes'
       preLoaderRoute: typeof appAppLayoutQuizzesRouteImport
-      parentRoute: typeof appAppLayoutRoute
-    }
-    '/(app)/_appLayout/analytics': {
-      id: '/(app)/_appLayout/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof appAppLayoutAnalyticsRouteImport
       parentRoute: typeof appAppLayoutRoute
     }
     '/(game)/_gameLayout/join': {
@@ -338,20 +338,20 @@ declare module '@tanstack/react-router' {
 }
 
 interface appAppLayoutRouteChildren {
+  appAppLayoutAnalyticsRoute: typeof appAppLayoutAnalyticsRoute
   appAppLayoutHistoryRoute: typeof appAppLayoutHistoryRoute
   appAppLayoutProfileRoute: typeof appAppLayoutProfileRoute
   appAppLayoutQuizzesRoute: typeof appAppLayoutQuizzesRoute
-  appAppLayoutAnalyticsRoute: typeof appAppLayoutAnalyticsRoute
   appAppLayoutQuizNewRoute: typeof appAppLayoutQuizNewRoute
   appAppLayoutQuizEditQuizIdRoute: typeof appAppLayoutQuizEditQuizIdRoute
   appAppLayoutQuizSetupQuizIdRoute: typeof appAppLayoutQuizSetupQuizIdRoute
 }
 
 const appAppLayoutRouteChildren: appAppLayoutRouteChildren = {
+  appAppLayoutAnalyticsRoute: appAppLayoutAnalyticsRoute,
   appAppLayoutHistoryRoute: appAppLayoutHistoryRoute,
   appAppLayoutProfileRoute: appAppLayoutProfileRoute,
   appAppLayoutQuizzesRoute: appAppLayoutQuizzesRoute,
-  appAppLayoutAnalyticsRoute: appAppLayoutAnalyticsRoute,
   appAppLayoutQuizNewRoute: appAppLayoutQuizNewRoute,
   appAppLayoutQuizEditQuizIdRoute: appAppLayoutQuizEditQuizIdRoute,
   appAppLayoutQuizSetupQuizIdRoute: appAppLayoutQuizSetupQuizIdRoute,
