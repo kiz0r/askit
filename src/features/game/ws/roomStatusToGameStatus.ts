@@ -1,28 +1,27 @@
 import type { GameStatus } from '@/entities/game';
 
-type RoomStatus = 'waiting' | 'in_progress' | 'question' | 'revealing' | 'finished';
+/** Mirrors `GameSessionStatus` on the server. */
+type RoomStatus = 'waiting' | 'starting' | 'question' | 'revealing' | 'finished';
 
 /**
- * Maps a server room status to the client-side game status. `in_progress` keeps
- * whatever state the client is already in (question or revealing), and the
- * remaining statuses already match a `GameStatus` and pass through.
+ * Maps a server room status to the client-side game status. `revealing` folds
+ * into `question`, since the reveal is rendered on the question screen; the
+ * remaining statuses map one to one.
  */
-export function roomStatusToGameStatus(status: RoomStatus, prevStatus: GameStatus): GameStatus {
+export function roomStatusToGameStatus(status: RoomStatus): GameStatus {
   switch (status) {
     case 'waiting':
       return 'lobby';
 
-    case 'in_progress':
-      return prevStatus;
+    case 'starting':
+      return 'starting';
 
+    case 'question':
     case 'revealing':
       return 'question';
 
     case 'finished':
       return 'finished';
-
-    case 'question':
-      return 'question';
 
     default: {
       // Unreachable code. This will never happen due to a strict contract between the frontend and backend
