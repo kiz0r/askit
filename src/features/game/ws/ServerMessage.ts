@@ -17,7 +17,7 @@ const RoomStatePayload = Schema.Struct({
   roomCode: RoomCodeSchema,
   status: Schema.Union(
     Schema.Literal('waiting'),
-    Schema.Literal('in_progress'),
+    Schema.Literal('starting'),
     Schema.Literal('question'),
     Schema.Literal('revealing'),
     Schema.Literal('finished')

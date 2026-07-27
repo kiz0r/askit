@@ -15,7 +15,7 @@ function applyHostMessage(prevState: GameState, message: ServerMessage): GameSta
     case 'room_state': {
       return {
         ...prevState,
-        status: roomStatusToGameStatus(message.payload.status, prevState.status),
+        status: roomStatusToGameStatus(message.payload.status),
         roomCode: message.payload.roomCode,
         sessionId: message.payload.sessionId,
         hostId: message.payload.hostId,
