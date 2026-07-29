@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import { devtools } from '@tanstack/devtools-vite';
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite'
@@ -31,5 +31,9 @@ export default defineConfig({
   },
   server: {
     strictPort: true,
+  },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
 })
