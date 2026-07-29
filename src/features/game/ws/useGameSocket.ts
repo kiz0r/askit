@@ -10,7 +10,11 @@ import { makeGameSocket } from './GameSocket';
 import { roomStatusToGameStatus } from './roomStatusToGameStatus';
 import type { ServerMessage } from './ServerMessage';
 
-function applyMessage(prevState: GameState, message: ServerMessage): GameState {
+/**
+ * Folds one server message into the next game state. Exported so the whole
+ * protocol can be exercised as a pure function, without a socket.
+ */
+export function applyMessage(prevState: GameState, message: ServerMessage): GameState {
   switch (message.type) {
     case 'room_state': {
       return {
