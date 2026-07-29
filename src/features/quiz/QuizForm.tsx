@@ -70,7 +70,7 @@ function quizToFormState(quiz: Quiz | null): QuizFormInput {
     description: quiz.description ?? '',
     tags: [...quiz.tags],
     settings: {
-      visibility: 'private',
+      visibility: quiz.settings.visibility,
       maxParticipants: quiz.settings.maxParticipants,
     },
     questions: quiz.questions.map((question) => ({
