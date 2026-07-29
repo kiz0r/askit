@@ -25,7 +25,11 @@ describe('formatDurationEstimate', () => {
     expect(formatDurationEstimate(Duration.millis(59_000))).toBe('<1 min');
   });
 
-  it('reports whole minutes below an hour', () => {
-    expect(formatDurationEstimate(Duration.millis(90_000))).toContain('min');
+  it.each([
+    [90_000, '2 min'],
+    [3_600_000, '1h'],
+    [5_400_000, '1h 30m'],
+  ])('renders %ims as %s', (millis, expected) => {
+    expect(formatDurationEstimate(Duration.millis(millis))).toBe(expected);
   });
 });

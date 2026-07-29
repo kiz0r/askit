@@ -99,8 +99,19 @@ describe('ServerMessageSchema', () => {
     }
   });
 
-  it('accepts a question without any correctness marker', () => {
-    const decoded = decode({ type: 'question', payload: question });
+  it('strips correctness from a question even if the server sends it', () => {
+    // The schema drops unknown keys, so this asserts a property of the client:
+    // no component can render which answer is right, whatever arrives on the
+    // wire. It is not a check on what the server sends -- that is enforced
+    // server-side and covered by the backend tests.
+    const decoded = decode({
+      type: 'question',
+      payload: {
+        ...question,
+        answers: [{ answerId: ANSWER_ID, text: '4', isCorrect: true }],
+      },
+    });
+
     expect(Either.isRight(decoded)).toBe(true);
     if (Either.isRight(decoded) && decoded.right.type === 'question') {
       expect(decoded.right.payload.answers[0]).not.toHaveProperty('isCorrect');

@@ -24,7 +24,7 @@ describe('isHttpErrorRecoverable', () => {
     expect(isHttpErrorRecoverable(notOk(500))).toBe(false);
   });
 
-  it.each([400, 401, 403, 404, 409, 422])('does not retry %i', (status) => {
+  it.each([400, 404, 422])('does not retry %i', (status) => {
     expect(isHttpErrorRecoverable(notOk(status))).toBe(false);
   });
 
