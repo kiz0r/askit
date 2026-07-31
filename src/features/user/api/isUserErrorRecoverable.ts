@@ -1,5 +1,8 @@
-import { SessionExpiredError } from '@/entities/user';
-import { InvalidCredentialsError, UsernameAlreadyExistsError } from '@/features/auth';
+import {
+  InvalidCredentialsError,
+  SessionExpiredError,
+  UsernameAlreadyExistsError,
+} from '@/entities/user';
 import { type HttpError, isHttpErrorRecoverable, ValidationError } from '@/shared/api';
 
 type UserError =

@@ -1,7 +1,6 @@
 import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
-import { User, withAuthError } from '@/entities/user';
-import { UsernameAlreadyExistsError } from '@/features/auth';
+import { User, UsernameAlreadyExistsError, withAuthError } from '@/entities/user';
 import {
   AskitServerUrl,
   handleContractErrors,
