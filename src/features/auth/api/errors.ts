@@ -4,15 +4,7 @@ export class AccountLockedError extends Data.TaggedError('AccountLockedError')<{
   readonly message: string;
 }> {}
 
-export class InvalidCredentialsError extends Data.TaggedError('InvalidCredentialsError')<{
-  readonly message: string;
-}> {}
-
 export class RegistrationFailedError extends Data.TaggedError('RegistrationFailedError')<{
-  readonly message: string;
-}> {}
-
-export class UsernameAlreadyExistsError extends Data.TaggedError('UsernameAlreadyExistsError')<{
   readonly message: string;
 }> {}
 

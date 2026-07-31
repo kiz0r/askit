@@ -13,19 +13,15 @@ type UnauthenticatedState = {
   readonly _tag: 'unauthenticated';
 };
 
-type SessionExpiredState = {
-  readonly _tag: 'sessionExpired';
-};
-
-export type AuthState =
-  | LoadingState
-  | AuthenticatedState
-  | UnauthenticatedState
-  | SessionExpiredState;
+/**
+ * An expired session is not a state of its own: the listener that catches a
+ * SessionExpiredError resets this to unauthenticated and redirects, so there is
+ * nothing for a fourth case to render.
+ */
+export type AuthState = LoadingState | AuthenticatedState | UnauthenticatedState;
 
 export const AuthState = {
   loading: (): LoadingState => ({ _tag: 'loading' }),
   authenticated: (user: User): AuthenticatedState => ({ _tag: 'authenticated', user }),
   unauthenticated: (): UnauthenticatedState => ({ _tag: 'unauthenticated' }),
-  sessionExpired: (): SessionExpiredState => ({ _tag: 'sessionExpired' }),
 } as const;

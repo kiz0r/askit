@@ -1,11 +1,6 @@
+import { InvalidCredentialsError, UsernameAlreadyExistsError } from '@/entities/user';
 import { type HttpError, isHttpErrorRecoverable, ValidationError } from '@/shared/api';
-import {
-  AccountLockedError,
-  InvalidCredentialsError,
-  RegistrationFailedError,
-  UserInactiveError,
-  UsernameAlreadyExistsError,
-} from './errors';
+import { AccountLockedError, RegistrationFailedError, UserInactiveError } from './errors';
 
 type AuthError =
   | AccountLockedError

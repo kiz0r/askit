@@ -1,6 +1,6 @@
 import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
-import { User } from '@/entities/user';
+import { InvalidCredentialsError, User } from '@/entities/user';
 import {
   AskitServerUrl,
   handleContractErrors,
@@ -8,7 +8,7 @@ import {
   withValidationError,
 } from '@/shared/api';
 import { EmailSchema, PasswordSchema } from '@/shared/schema';
-import { AccountLockedError, InvalidCredentialsError, UserInactiveError } from './errors';
+import { AccountLockedError, UserInactiveError } from './errors';
 
 /**
  * Schema for validating login credentials.

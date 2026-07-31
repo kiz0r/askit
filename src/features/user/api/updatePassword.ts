@@ -1,7 +1,6 @@
 import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
-import { withAuthError } from '@/entities/user';
-import { InvalidCredentialsError } from '@/features/auth';
+import { InvalidCredentialsError, withAuthError } from '@/entities/user';
 import {
   AskitServerUrl,
   handleContractErrors,

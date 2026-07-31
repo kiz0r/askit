@@ -1,6 +1,6 @@
 import { Effect, Schema } from 'effect';
 import { Fetch, Request } from 'fx-fetch';
-import { User } from '@/entities/user';
+import { InvalidCredentialsError, User } from '@/entities/user';
 import {
   AskitServerUrl,
   handleContractErrors,
@@ -8,7 +8,7 @@ import {
   withValidationError,
 } from '@/shared/api';
 import { EmailSchema, PasswordSchema } from '@/shared/schema';
-import { InvalidCredentialsError, RegistrationFailedError } from './errors';
+import { RegistrationFailedError } from './errors';
 
 export const RegisterCredentialsSchema = Schema.Struct({
   username: Schema.String.pipe(Schema.nonEmptyString(), Schema.minLength(3)),
