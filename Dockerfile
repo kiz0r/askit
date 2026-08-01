@@ -27,12 +27,14 @@ RUN test -n "$PUBLIC_ASKIT_WEBSOCKET_URL" \
 RUN pnpm build
 
 
-FROM nginx:alpine AS runtime
+# The unprivileged variant runs as a non-root user, which cannot bind a port
+# below 1024, hence 8000 rather than 80.
+FROM nginxinc/nginx-unprivileged:alpine AS runtime
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
-    CMD wget --spider -q http://127.0.0.1/ || exit 1
+    CMD wget --spider -q http://127.0.0.1:8000/ || exit 1
